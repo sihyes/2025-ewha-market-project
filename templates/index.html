@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<link rel="stylesheet" type="text/css" href="style.css">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
 <header>
@@ -21,34 +21,36 @@
   <div class="header-bottom">
     <nav class="nav-menu">
       <ul>
-        <li><a href="#">홈</a></li>
-        <li><a href="#">상품 전체보기</a></li>
-        <li><a href="#">리뷰 전체보기</a></li>
-        <li><a href="#">상품 등록하기</a></li>
-        <li><a href="#">리뷰 등록하기</a></li>
+        <li><a href="{{ url_for('index') }}">홈</a></li>
+        <li><a href="{{ url_for('feature_list') }}">상품 전체보기</a></li>
+        <li><a href="{{ url_for('review_list') }}">리뷰 전체보기</a></li>
+        <li><a href="{{ url_for('product_register') }}">상품 등록하기</a></li>
+        <li><a href="{{ url_for('review_register') }}">리뷰 등록하기</a></li>
       </ul>
     </nav>
 
     <button class="cart-btn">
-      <img src="./images/Shopping-bag.svg" alt="장바구니" />
+      <img src="{{ url_for('static', filename='img/Shopping-bag.svg') }}" alt="장바구니" />
     </button>
   </div>
 </header>
 
-
+<main>
+    {% block content %}{% endblock %}
+</main>
 
 
 <footer>
 
   <div class="footer-bottom">
     <nav class="footer-menu">
-      <ul>
-        <li><a href="#">홈</a></li>
-        <li><a href="#">상품 전체보기</a></li>
-        <li><a href="#">리뷰 전체보기</a></li>
-        <li><a href="#">상품 등록하기</a></li>
-        <li><a href="#">리뷰 등록하기</a></li>
-      </ul>
+    <ul>
+      <li><a href="{{ url_for('index') }}">홈</a></li>
+      <li><a href="{{ url_for('feature_list') }}">상품 전체보기</a></li>
+      <li><a href="{{ url_for('review_list') }}">리뷰 전체보기</a></li>
+      <li><a href="{{ url_for('product_register') }}">상품 등록하기</a></li>
+      <li><a href="{{ url_for('review_register') }}">리뷰 등록하기</a></li>
+    </ul>
     </nav>
   </div>
 
