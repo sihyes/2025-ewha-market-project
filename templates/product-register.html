@@ -48,7 +48,13 @@
 
       <form id="product-form" action="/result" method="POST">
         <label>
-          상품명:
+          판매자 아이디:
+          <input type="text" name="seller_id" required />
+        </label>
+        <br />
+
+        <label>
+          상품 이름:
           <input type="text" name="name" required />
         </label>
         <br />
@@ -60,14 +66,36 @@
         <br />
 
         <label>
+          지역:
+          <input type="text" name="region" required />
+        </label>
+        <br />
+
+        <label>
+          상태:
+          <select name="condition" required>
+            <option value="">선택</option>
+            <option value="new">새상품</option>
+            <option value="used">중고</option>
+          </select>
+        </label>
+        <br />
+
+        <label>
           설명:
           <textarea name="description" rows="4" required></textarea>
         </label>
         <br />
 
         <label>
-          이미지 URL:
-          <input type="text" name="image" />
+          대표 사진:
+          <input type="text" name="image_url" placeholder="외부 URL 입력" />
+        </label>
+        <br />
+
+        <label>
+          또는 내부 파일 업로드:
+          <input type="file" name="image_file" accept="image/*" />
         </label>
         <br />
 
