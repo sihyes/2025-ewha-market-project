@@ -16,21 +16,7 @@ header {
   padding: 12px 20px;
 }
 
-/* 검색창 */
-.search-bar {
-  flex: 1;
-  max-width: 400px;
-  padding: 10px 14px;
-  border: 1px solid #eef0f3;
-  border-radius: 8px;
-  background-color: #fdfdfd;
-  font-size: 14px;
-  outline: none;
-}
 
-.search-bar::placeholder {
-  color: #999;
-}
 
 /* 로그인/회원가입 버튼 */
 .auth-buttons {
@@ -113,24 +99,6 @@ footer {
   margin-bottom: 30px;
 }
 
-.footer-search-bar {
-  display: flex;
-  gap: 10px;
-}
-
-
-.search-btn {
-  background-color: #0b593f;
-  border: none;
-  border-radius: 8px;
-  padding: 8px;
-  cursor: pointer;
-}
-
-.search-btn img {
-  width: 18px;
-  height: 18px;
-}
 
 /* 하단 네비게이션 */
 .footer-bottom ul {
