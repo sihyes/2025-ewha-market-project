@@ -1,4 +1,4 @@
-
+<!--
 {% extends "index.html" %}
 
 {% block title %}상품 전체 조회{% endblock %}
@@ -6,3 +6,46 @@
 {% block content %}
 <h1>상품 전체 조회 화면</h1>
 {% endblock %}
+-->
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>상품 전체보기</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/style.css') }}"
+    />
+  </head>
+  <body>
+    <header>
+      <!-- 헤더 그대로 사용 -->
+    </header>
+
+    <main>
+      <h1>상품 전체보기</h1>
+
+      {% if products %}
+      <ul>
+        {% for p in products %}
+        <li style="margin-bottom: 30px">
+          <h2>{{ p.name }} - {{ p.price }}원</h2>
+          <p>{{ p.description }}</p>
+          <img
+            src="{{ p.image }}"
+            alt="{{ p.name }}"
+            style="max-width: 200px"
+          />
+        </li>
+        {% endfor %}
+      </ul>
+      {% else %}
+      <p>등록된 상품이 없습니다.</p>
+      {% endif %}
+    </main>
+
+    <footer>
+      <!-- 푸터 그대로 사용 -->
+    </footer>
+  </body>
+</html>
