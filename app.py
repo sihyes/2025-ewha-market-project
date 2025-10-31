@@ -6,13 +6,15 @@ app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'static/uploads'  # 업로드 파일 저장 경로
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
+products=[]
+
 @app.route('/')
 def index():
     return render_template('index.html')
 
 @app.route('/feature-list')
 def feature_list():
-    return render_template('feature-list.html')
+    return render_template('feature-list.html', products=products)
 
 @app.route('/review-list')
 def review_list():
@@ -57,17 +59,19 @@ def result():
     print("이미지 URL:", image_url)
     print("업로드 파일 경로:", uploaded_file_path)
 
-    return render_template(
-        'result.html',
-        seller_id=seller_id,
-        name=name,
-        price=price,
-        region=region,
-        condition=condition,
-        description=description,
-        image_url=image_url if image_url else None,
-        image_file=uploaded_file_path
-    )
+    product = {
+        'id': len(products)+1,
+        'seller_id': seller_id,
+        'name': name,
+        'price': int(price),
+        'region': region,
+        'condition': condition,
+        'description': description,
+        'image': uploaded_file_path if uploaded_file_path else image_url
+    }
+    products.append(product)
 
+    return render_template('feature-list.html', products=products)
+    
 if __name__ == '__main__':
     app.run(debug=True)

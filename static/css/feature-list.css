@@ -47,3 +47,22 @@ h4 {
 .product-card strong {
   font-size: 15px;
 }
+
+/* 버튼 영역 */
+.product-buttons {
+  margin-top: 8px;
+  text-align: center; /* 버튼을 카드 중앙에 정렬 */
+}
+
+/* 버튼 스타일 */
+.detail-btn, .like-btn {
+  display: inline-block; 
+  padding: 5px 8px;     
+  border: 1px solid black; 
+  background-color: #f5f9f8; 
+  color: black;           
+  border-radius: 4px;    
+  font-size: 12px;        
+  margin: 0 5px;          
+  text-decoration: none;  
+}
