@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>리뷰 등록하기 - EWHA MARKET PLACE</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/review.css') }}">
+</head>
+<body>
+    <header>
+        <div class="header-top">
+            <div class = "search">
+                <a href="/">EWHA MARKET PLACE</a>
+            </div>
+            <div class="auth-buttons">
+                <button class="login-btn">로그인</button>
+                <button class="signup-btn">회원가입</button>
+            </div>
+        </div>
+
+        <nav class="nav-menu">
+            <ul>
+                <li><a href="/">홈</a></li>
+                <li><a href="/list">상품 전체보기</a></li>
+                <li><a href="/review-list">리뷰 전체보기</a></li> 
+                <li><a href="/reg_items">상품 등록하기</a></li>
+                <li><a href="/review-register">리뷰 등록하기</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <div class="register-container">
+            <h1>리뷰 등록하기</h1>
+            <form id="review-form">
+                <label for="review-title">제목:</label>
+                <input type="text" id="review-title" name="title" required>
+                
+                <label for="review-product">상품명:</label>
+                <input type="text" id="review-product" name="productName" required>
+
+                <label>평점:</label>
+                <div class="rating-stars">
+                    <span class="star-btn" data-rating="1" onclick="setRating(1)">★</span>
+                    <span class="star-btn" data-rating="2" onclick="setRating(2)">★</span>
+                    <span class="star-btn" data-rating="3" onclick="setRating(3)">★</span>
+                    <span class="star-btn" data-rating="4" onclick="setRating(4)">★</span>
+                    <span class="star-btn" data-rating="5" onclick="setRating(5)">★</span>
+                    <input type="hidden" id="review-rating-value" name="rating" value="5">
+                </div>
+
+                <label for="review-content">내용:</label>
+                <textarea id="review-content" name="content" rows="6" required></textarea>
+
+                <button type="submit" class="submit-btn">등록하기</button>
+            </form>
+        </div>
+
+        <script src="{{ url_for('static', filename='js/review-register.js') }}"></script>
+    </main>
+    
+    <footer>
+        <div class="footer-bottom">
+            <nav class="footer-menu">
+                <ul>
+                    <li><a href="/">홈</a></li>
+                    <li><a href="/list">상품 전체보기</a></li>
+                    <li><a href="/review-list">리뷰 전체보기</a></li>
+                    <li><a href="/reg_items">상품 등록하기</a></li>
+                    <li><a href="/review-register">리뷰 등록하기</a></li>
+                </ul>
+            </nav>
+        </div>
+        <p class="footer-copy">© Copyright 2025 - Ctrl+Z</p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>상세 리뷰 보기 - EWHA MARKET PLACE</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/review.css') }}">
+</head>
+<body>
+    <header>
+        <div class="header-top">
+            <div class = "search">
+                <a href="/">EWHA MARKET PLACE</a>
+            </div>
+            <div class="auth-buttons">
+                <button class="login-btn">로그인</button>
+                <button class="signup-btn">회원가입</button>
+            </div>
+        </div>
+
+        <nav class="nav-menu">
+            <ul>
+                <li><a href="/">홈</a></li>
+                <li><a href="/list">상품 전체보기</a></li>
+                <li><a href="/review-list">리뷰 전체보기</a></li> 
+                <li><a href="/reg_items">상품 등록하기</a></li>
+                <li><a href="/review-register">리뷰 등록하기</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <div id="main-content" class="detailed-review-container">
+            <h1>상세 리뷰 보기</h1>
+
+            <div class="review-details">
+                <p>상품명: <span id="detail-product-name"></span></p>
+                <p>리뷰 제목: <span id="detail-title"></span></p>
+                <p>별점: <span id="detail-rating" class="rating-stars"></span></p>
+            </div>
+
+            <div class="review-body">
+                <img id="detail-image" src="" alt="리뷰 상품 이미지" class="review-detail-img">
+                <div class="review-content-box">
+                    <h4>상세 리뷰</h4>
+                    <p id="detail-content"></p>
+                </div>
+            </div>
+
+            <p class="review-writer">리뷰어 아이디: <span id="detail-writer-id"></span></p>
+        </div>
+        
+        <script src="{{ url_for('static', filename='js/review-list.js') }}"></script>
+        
+    </main>
+    
+    <footer>
+        <div class="footer-bottom">
+            <nav class="footer-menu">
+                <ul>
+                    <li><a href="/">홈</a></li>
+                    <li><a href="/list">상품 전체보기</a></li>
+                    <li><a href="/review-list">리뷰 전체보기</a></li>
+                    <li><a href="/reg_items">상품 등록하기</a></li>
+                    <li><a href="/review-register">리뷰 등록하기</a></li>
+                </ul>
+            </nav>
+        </div>
+        <p class="footer-copy">© Copyright 2025 - Ctrl+Z</p>
+    </footer>
+</body>
+</html>
