@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/result.css') }}"
+    />
+  </head>
+  <body>
+    <header>
+      <div class="header-top">
+        <div class="search">
+          <a>Ctrl+Z : EWHA MARKET PLACE</a>
+        </div>
+
+        <div class="auth-buttons">
+          <button class="login-btn">로그인</button>
+          <button class="signup-btn">회원가입</button>
+        </div>
+      </div>
+
+      <div class="header-bottom">
+        <nav class="nav-menu">
+          <ul>
+            <li><a href="{{ url_for('index') }}">홈</a></li>
+            <li><a href="{{ url_for('feature_list') }}">상품 전체보기</a></li>
+            <li><a href="{{ url_for('review_list') }}">리뷰 전체보기</a></li>
+            <li>
+              <a href="{{ url_for('product_register') }}">상품 등록하기</a>
+            </li>
+            <li>
+              <a href="{{ url_for('review_register') }}">리뷰 등록하기</a>
+            </li>
+          </ul>
+        </nav>
+
+        <button class="cart-btn">
+          <img
+            src="{{ url_for('static', filename='img/Shopping-bag.svg') }}"
+            alt="장바구니"
+          />
+        </button>
+      </div>
+    </header>
+
+    <main>
+      <h1>상품 등록 완료</h1>
+      <p>판매자 아이디: {{ seller_id }}</p>
+      <p>상품명: {{ name }}</p>
+      <p>가격: {{ price }}</p>
+      <p>지역: {{ region }}</p>
+      <p>상태: {{ condition }}</p>
+      <p>설명: {{ description }}</p>
+      {% if image_url %}
+      <p>
+        대표 사진(URL):
+        <img src="{{ image_url }}" alt="상품 이미지" style="max-width: 200px" />
+      </p>
+      {% elif image_file %}
+      <p>
+        대표 사진(업로드):
+        <img
+          src="{{ image_file }}"
+          alt="상품 이미지"
+          style="max-width: 200px"
+        />
+      </p>
+      {% endif %}
+      <a href="/">홈으로 돌아가기</a>
+    </main>
+
+    <footer>
+      <div class="footer-bottom">
+        <nav class="footer-menu">
+          <ul>
+            <li><a href="{{ url_for('index') }}">홈</a></li>
+            <li><a href="{{ url_for('feature_list') }}">상품 전체보기</a></li>
+            <li><a href="{{ url_for('review_list') }}">리뷰 전체보기</a></li>
+            <li>
+              <a href="{{ url_for('product_register') }}">상품 등록하기</a>
+            </li>
+            <li>
+              <a href="{{ url_for('review_register') }}">리뷰 등록하기</a>
+            </li>
+          </ul>
+        </nav>
+      </div>
+
+      <p class="footer-copy">© Copyright 2025 - Ctrl+Z</p>
+    </footer>
+  </body>
+</html>
