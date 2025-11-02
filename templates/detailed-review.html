@@ -1,72 +1,81 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>상세 리뷰 보기 - EWHA MARKET PLACE</title>
+    <meta charset="utf-8">
+    <title>리뷰 상세보기</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/review.css') }}">
 </head>
 <body>
-    <header>
-        <div class="header-top">
-            <div class = "search">
-                <a href="/">EWHA MARKET PLACE</a>
-            </div>
-            <div class="auth-buttons">
-                <button class="login-btn">로그인</button>
-                <button class="signup-btn">회원가입</button>
-            </div>
-        </div>
+<header>
+  <div class="header-top">
+    <div class = "search">
+      <a>Ctrl+Z : EWHA MARKET PLACE</a>
+    </div>
 
-        <nav class="nav-menu">
-            <ul>
-                <li><a href="/">홈</a></li>
-                <li><a href="/list">상품 전체보기</a></li>
-                <li><a href="/review-list">리뷰 전체보기</a></li> 
-                <li><a href="/reg_items">상품 등록하기</a></li>
-                <li><a href="/review-register">리뷰 등록하기</a></li>
-            </ul>
-        </nav>
-    </header>
 
-    <main>
-        <div id="main-content" class="detailed-review-container">
-            <h1>상세 리뷰 보기</h1>
+    <div class="auth-buttons">
+      <button class="login-btn">로그인</button>
+      <button class="signup-btn">회원가입</button>
+    </div>
+  </div>
 
-            <div class="review-details">
-                <p>상품명: <span id="detail-product-name"></span></p>
-                <p>리뷰 제목: <span id="detail-title"></span></p>
-                <p>별점: <span id="detail-rating" class="rating-stars"></span></p>
-            </div>
+  <div class="header-bottom">
+    <nav class="nav-menu">
+      <ul>
+        <li><a href="{{ url_for('index') }}">홈</a></li>
+        <li><a href="{{ url_for('feature_list') }}">상품 전체보기</a></li>
+        <li><a href="{{ url_for('review_list') }}">리뷰 전체보기</a></li>
+        <li><a href="{{ url_for('product_register') }}">상품 등록하기</a></li>
+        <li><a href="{{ url_for('review_register') }}">리뷰 등록하기</a></li>
+      </ul>
+    </nav>
 
-            <div class="review-body">
-                <img id="detail-image" src="" alt="리뷰 상품 이미지" class="review-detail-img">
-                <div class="review-content-box">
-                    <h4>상세 리뷰</h4>
-                    <p id="detail-content"></p>
-                </div>
-            </div>
+    <button class="cart-btn">
+      <img src="{{ url_for('static', filename='img/Shopping-bag.svg') }}" alt="장바구니" />
+    </button>
+  </div>
+</header>
 
-            <p class="review-writer">리뷰어 아이디: <span id="detail-writer-id"></span></p>
+<main>
+    <div class="detail-content-area"> 
+        
+        <div class="detail-image-box"> 
+            <img id="detail-image" src="/static/img/review_fan.jpg" alt="리뷰 상품 이미지" class="review-detail-img">
         </div>
         
-        <script src="{{ url_for('static', filename='js/review-list.js') }}"></script>
-        
-    </main>
+        <div class="detail-info-box">
+            <p>상품명: <span id="detail-product-name">Windpia 핸디 선풍기</span></p>
+            <p>리뷰 제목: <span id="detail-title">꽤 시원해요!</span></p>
+            <p>별점: <span id="detail-rating" class="rating-stars">★★★★☆</span></p>
+            <p class="review-writer">리뷰어 아이디: <span id="detail-writer-id">abc1234</span></p>
+            <div class="detail-content-box"> 
+                <p id="detail-content">   생각보다 시끄럽지 않고 시원하네요! 휴대성이 좋아서 잘 사용 중입니다.
+   다만 기기에 기스가 잘 생기는 게 아쉬워서 1점 깎았습니다.
+</p>
+            </div>
+           
+        </div>
+    </div>
     
-    <footer>
-        <div class="footer-bottom">
-            <nav class="footer-menu">
-                <ul>
-                    <li><a href="/">홈</a></li>
-                    <li><a href="/list">상품 전체보기</a></li>
-                    <li><a href="/review-list">리뷰 전체보기</a></li>
-                    <li><a href="/reg_items">상품 등록하기</a></li>
-                    <li><a href="/review-register">리뷰 등록하기</a></li>
-                </ul>
-            </nav>
-        </div>
-        <p class="footer-copy">© Copyright 2025 - Ctrl+Z</p>
-    </footer>
+</main>
+
+<footer>
+
+  <div class="footer-bottom">
+    <nav class="footer-menu">
+    <ul>
+      <li><a href="{{ url_for('index') }}">홈</a></li>
+      <li><a href="{{ url_for('feature_list') }}">상품 전체보기</a></li>
+      <li><a href="{{ url_for('review_list') }}">리뷰 전체보기</a></li>
+      <li><a href="{{ url_for('product_register') }}">상품 등록하기</a></li>
+      <li><a href="{{ url_for('review_register') }}">리뷰 등록하기</a></li>
+    </ul>
+    </nav>
+  </div>
+
+  <p class="footer-copy">© Copyright 2025 - Ctrl+Z</p>
+</footer>
+
+<script src="{{ url_for('static', filename='js/review-list.js') }}"></script>
 </body>
 </html>

@@ -39,13 +39,13 @@ function loadReviewList() {
     const countElement = document.getElementById('review-count');
     if (!container || !countElement) return;
 
-    countElement.textContent = `${reviewData.length}개 리뷰 등록됨`;
+    countElement.textContent = `${reviewData.length}개`;
 
     reviewData.forEach(review => {
         const card = document.createElement('div');
         card.className = 'review-card';
         card.onclick = () => {
-            window.location.href = `/detailed-review/${review.id}`;
+            window.location.href = DETAIL_URL_PATTERN; 
         };
         card.innerHTML = `
             <img src="/${review.image}" alt="${review.title} 이미지" class="review-card-img">
@@ -67,7 +67,7 @@ function loadReviewDetail() {
         document.getElementById('detail-product-name').textContent = review.productName;
         document.getElementById('detail-title').textContent = review.title;
         document.getElementById('detail-rating').textContent = getStarRating(review.rating);
-        document.getElementById('detail-image').src = `/static/${review.image}`; 
+        document.getElementById('detail-image').src = `/${review.image}`; 
         document.getElementById('detail-image').alt = review.title;
         document.getElementById('detail-content').textContent = review.content;
         document.getElementById('detail-writer-id').textContent = review.writer;

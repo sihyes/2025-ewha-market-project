@@ -1,59 +1,75 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>리뷰 전체 보기 - EWHA MARKET PLACE</title>
+    <meta charset="utf-8">
+    <title>리뷰 전체보기</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/review.css') }}">
 </head>
 <body>
-    <header>
-        <div class="header-top">
-            <div class = "search">
-                <a href="/">EWHA MARKET PLACE</a>
-            </div>
-            <div class="auth-buttons">
-                <button class="login-btn">로그인</button>
-                <button class="signup-btn">회원가입</button>
-            </div>
-        </div>
+<header>
+  <div class="header-top">
+    <div class = "search">
+      <a>Ctrl+Z : EWHA MARKET PLACE</a>
+    </div>
 
-        <nav class="nav-menu">
-            <ul>
-                <li><a href="/">홈</a></li>
-                <li><a href="/list">상품 전체보기</a></li>
-                <li><a href="/review-list">리뷰 전체보기</a></li> 
-                <li><a href="/reg_items">상품 등록하기</a></li>
-                <li><a href="/review-register">리뷰 등록하기</a></li>
-            </ul>
-        </nav>
-    </header>
+    <div class="auth-buttons">
+      <button class="login-btn">로그인</button>
+      <button class="signup-btn">회원가입</button>
+    </div>
+  </div>
 
-    <main>
-        <div class="review-header-top">
-            <h1>리뷰 전체 보기</h1>
-            <p class="review-count">현재까지 <span id="review-count">0개</span> 리뷰 등록됨</p>
-        </div>
+  <div class="header-bottom">
+    <nav class="nav-menu">
+      <ul>
+        <li><a href="{{ url_for('index') }}">홈</a></li>
+        <li><a href="{{ url_for('feature_list') }}">상품 전체보기</a></li>
+        <li><a href="{{ url_for('review_list') }}">리뷰 전체보기</a></li>
+        <li><a href="{{ url_for('product_register') }}">상품 등록하기</a></li>
+        <li><a href="{{ url_for('review_register') }}">리뷰 등록하기</a></li>
+      </ul>
+    </nav>
+
+    <button class="cart-btn">
+      <img src="{{ url_for('static', filename='img/Shopping-bag.svg') }}" alt="장바구니" />
+    </button>
+  </div>
+</header>
+
+<main>
+    <div class="review-header-top">
+        <h1>리뷰 전체 보기</h1>
+        <p class="review-count">현재까지 <span id="review-count">0개</span> 리뷰 등록됨</p>
+    </div>
         
-        <section class="review-grid" id="review-list-container">
-            </section>
+    <section class="review-grid" id="review-list-container">
 
-        <script src="{{ url_for('static', filename='js/review-list.js') }}"></script>
-    </main>
+    </section>
+
     
-    <footer>
-        <div class="footer-bottom">
-            <nav class="footer-menu">
-                <ul>
-                    <li><a href="/">홈</a></li>
-                    <li><a href="/list">상품 전체보기</a></li>
-                    <li><a href="/review-list">리뷰 전체보기</a></li>
-                    <li><a href="/reg_items">상품 등록하기</a></li>
-                    <li><a href="/review-register">리뷰 등록하기</a></li>
-                </ul>
-            </nav>
-        </div>
-        <p class="footer-copy">© Copyright 2025 - Ctrl+Z</p>
-    </footer>
+</main>
+
+
+<footer>
+
+  <div class="footer-bottom">
+    <nav class="footer-menu">
+    <ul>
+      <li><a href="{{ url_for('index') }}">홈</a></li>
+      <li><a href="{{ url_for('feature_list') }}">상품 전체보기</a></li>
+      <li><a href="{{ url_for('review_list') }}">리뷰 전체보기</a></li>
+      <li><a href="{{ url_for('product_register') }}">상품 등록하기</a></li>
+      <li><a href="{{ url_for('review_register') }}">리뷰 등록하기</a></li>
+    </ul>
+    </nav>
+  </div>
+
+  <p class="footer-copy">© Copyright 2025 - Ctrl+Z</p>
+</footer>
+
+<script src="{{ url_for('static', filename='js/review-list.js') }}"></script>
+<script>
+    // 'detailed_review' 기본 경로만 사용
+    const DETAIL_URL_PATTERN = "{{ url_for('detailed_review') }}"; 
+</script>
 </body>
 </html>
