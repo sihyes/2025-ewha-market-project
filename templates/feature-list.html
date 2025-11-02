@@ -32,7 +32,7 @@
         <p><strong>{{ p.name }}</strong></p>
         <p>₩{{ "{:,}".format(p.price) }}</p>
         <div class="product-buttons">
-            <a href="/product/{{loop.index}}" class="detail-btn">상세 페이지</a>
+            <a href="/product/{{ p.id if p.id else loop.index }}" class="detail-btn">상세 페이지</a>
             <button class="like-btn">찜하기</button>
         </div>
       </div>
