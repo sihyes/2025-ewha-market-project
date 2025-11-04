@@ -59,7 +59,7 @@ document.addEventListener('DOMContentLoaded', function() {
         <p class="item-price">${item.price} 원</p>
       </div>
       <button class="wishlist-btn" data-name="${item.name}">
-        <img src="{{ url_for('static', filename='img/heart-fill.svg') }}" alt="찜" />
+        <img src="/static/img/heart-fill.svg" alt="찜" />
       </button>
     `;
     wishlistContainer.appendChild(card);
