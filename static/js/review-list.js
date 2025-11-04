@@ -60,7 +60,8 @@ function loadReviewList() {
 
 function loadReviewDetail() {
     const pathSegments = window.location.pathname.split('/');
-    const reviewId = parseInt(pathSegments[pathSegments.length - 1]); 
+    const reviewId = parseInt(pathSegments[pathSegments.length - 1]);
+    if (isNaN(reviewId)) return;
     const review = reviewData.find(r => r.id === reviewId);
     
     if (review) {

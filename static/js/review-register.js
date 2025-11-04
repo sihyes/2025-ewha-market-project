@@ -31,7 +31,7 @@ function handleReviewSubmit(e) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    setRating(5);
+    setRating(0);
     const reviewForm = document.getElementById('review-form');
     if (reviewForm) {
         reviewForm.addEventListener('submit', handleReviewSubmit);
