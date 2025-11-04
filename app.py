@@ -27,9 +27,6 @@ def product_register():
 def review_register():
     return render_template('review-register.html')
 
-    # @app.route("/login")
-    # def login():
-    #     return render_template("login.html")
 
 @app.route("/signup")
 def signup():
