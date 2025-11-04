@@ -16,7 +16,7 @@
     <div class="auth-buttons">
       {% if session.get('user') %}
         <p>안녕하세요, {{ session.get('user') }}님</p>
-        <button class="logout-btn" onClick="location.href='{{ url_for('logout') }}'">로그아웃</button>
+        <button class="logout-btn" onclick="location.href='{{ url_for('logout') }}'">로그아웃</button>
       {% else %}
         <button class="login-btn" onclick="location.href='{{ url_for('login') }}'">로그인</button>
         <button class="signup-btn" onclick="location.href='{{ url_for('signup') }}'">회원가입</button>
