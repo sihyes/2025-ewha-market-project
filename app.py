@@ -6,11 +6,9 @@ app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'static/uploads'  # 업로드 파일 저장 경로
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
-products=[]
-
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return render_template('home.html')
 
 @app.route('/feature-list')
 def feature_list():
@@ -69,6 +67,7 @@ def result():
         description=description, 
         image_url=image_url if image_url else None, image_file=uploaded_file_path )
 
+products=[] #임시 작성 코드, 변경 필요 
 
 @app.route('/product/<int:product_id>')
 def product_detail(product_id):
