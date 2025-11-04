@@ -34,25 +34,11 @@ def product_register():
 @app.route('/review-register')
 def review_register():
     return render_template('review-register.html')
-<<<<<<< HEAD
 #------회원가입
-=======
-
-
->>>>>>> f1632bf40e46af660ab738cadd5dd1791e1a8c6b
 @app.route("/signup")
 def signup():
     return render_template("signup.html")
 
-<<<<<<< HEAD
-=======
-@app.route('/check_duplicate')
-def check_duplicate():
-    user_id = request.args.get('id')
-    exists = not DB.user_duplicate_check(user_id)  # 중복이면 False를 반환하니까 반전
-    return jsonify({"exists": exists})
-
->>>>>>> f1632bf40e46af660ab738cadd5dd1791e1a8c6b
 @app.route("/signup_post", methods=['POST'])
 def register_user():
     data=request.form
@@ -71,16 +57,6 @@ def check_duplicate():
     return jsonify({"exists": exists})
 
 
-<<<<<<< HEAD
-@app.route("/submit_item_post", methods=['POST'])
-def reg_item_submit_post(): 
-    image_file=request.files["file"]
-    image_file.save("static/image/{}".format(image_file.filename))
-    data=request.form
-    DB.insert_item(data['name'], data, image_file.filename)
-    return render_template("submit_item_result.html", data=data, img_path= "static/images/{}".format(image_file.filename))
-#----------------로그인
-=======
 # @app.route("/submit_item_post", methods=['POST'])
 # def reg_item_submit_post(): 
 #     image_file=request.files["file"]
@@ -89,7 +65,6 @@ def reg_item_submit_post():
 #     DB.insert_item(data['name'], data, image_file.filename)
 #     return render_template("submit_item_result.html", data=data, img_path= "static/images/{}".format(image_file.filename))
 
->>>>>>> f1632bf40e46af660ab738cadd5dd1791e1a8c6b
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
@@ -128,8 +103,6 @@ def toggle_wishlist(item_id):
     wished = DB.toggle_wishlist(user_id, item_id)
     
     return {"success": True, "wished": wished}
-
-
 
 @app.route("/logout")
 def logout():
