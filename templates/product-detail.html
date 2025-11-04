@@ -1,51 +1,45 @@
-<!--
-{% extends "index.html" %}
-
-{% block title %}상품 전체 조회{% endblock %}
-
-{% block content %}
-<h1>상품 전체 조회 화면</h1>
-{% endblock %}
--->
-
 <!DOCTYPE html>
-<html>
-  <head>
-    <title>상품 전체보기</title>
-    <link
-      rel="stylesheet"
-      href="{{ url_for('static', filename='css/style.css') }}"
-    />
-  </head>
-  <body>
-    <header>
-      <!-- 헤더 그대로 사용 -->
-    </header>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>상품 상세 페이지</title>
+  <style>
+    .product-detail {
+      display: flex; 
+      align-items: flex-start; 
+      gap: 20px; 
+    }
+  </style>
+</head>
+<body>
 
-    <main>
-      <h1>상품 전체보기</h1>
+  <div class="product-detail">
 
-      {% if products %}
-      <ul>
-        {% for p in products %}
-        <li style="margin-bottom: 30px">
-          <h2>{{ p.name }} - {{ p.price }}원</h2>
-          <p>{{ p.description }}</p>
-          <img
-            src="{{ p.image }}"
-            alt="{{ p.name }}"
-            style="max-width: 200px"
-          />
-        </li>
-        {% endfor %}
-      </ul>
-      {% else %}
-      <p>등록된 상품이 없습니다.</p>
-      {% endif %}
-    </main>
+    <!-- 왼쪽: 상품 이미지 -->
+    <div class="product-image">
+    <img src="product-detail_images/product-detail_1.webp" alt="상품 이미지" width="500">
+    </div>
 
-    <footer>
-      <!-- 푸터 그대로 사용 -->
-    </footer>
-  </body>
+    <!-- 오른쪽: 상품 정보 -->
+    <div class="product-info">
+      <h2>컬러 립글로스</h2>
+
+      <p>
+        어떤 피부톤이든 너무 잘 어울리는 립스틱<br>
+        고급스러운 색감으로 언제 어디서나 분위기를 만들어주는 핑크빛 립글로스
+      </p>
+
+      <p><strong>가격:</strong> ₩9,900</p>
+
+      <p>
+        <a href="buy.html">구매하기</a> |
+        <a href="wishlist.html">찜하기</a>
+      </p>
+    </div>
+
+  </div>
+
+</body>
 </html>
+
