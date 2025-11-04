@@ -38,8 +38,7 @@ def signup():
 @app.route('/check_duplicate')
 def check_duplicate():
     user_id = request.args.get('id')
-    db = DBhandler()
-    exists = not db.user_duplicate_check(user_id)  # 중복이면 False를 반환하니까 반전
+    exists = not DB.user_duplicate_check(user_id)  # 중복이면 False를 반환하니까 반전
     return jsonify({"exists": exists})
 
 @app.route("/signup_post", methods=['POST'])
