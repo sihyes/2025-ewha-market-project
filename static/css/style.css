@@ -24,6 +24,11 @@ header {
   gap: 10px;
 }
 
+.auth-buttons p {
+  margin: 0;
+  line-height: 32px; /* 버튼과 같은 높이로 */
+}
+
 .auth-buttons button {
   background-color: #0b593f;
   color: #fff;

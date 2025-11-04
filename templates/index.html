@@ -3,7 +3,7 @@
 <head>
 <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
-</head>
+
 <body>
 <header>
   <div class="header-top">
@@ -14,9 +14,16 @@
 
 
     <div class="auth-buttons">
-      <button class="login-btn" onclick="location.href='{{ url_for('login') }}'">로그인</button>
-      <button class="signup-btn" onclick="location.href='{{ url_for('signup') }}'">회원가입</button>
+      {% if session.get('user') %}
+        <p>안녕하세요, {{ session.get('user') }}님</p>
+        <button class="logout-btn" onClick="location.href='{{ url_for('logout') }}'">로그아웃</button>
+      {% else %}
+        <button class="login-btn" onclick="location.href='{{ url_for('login') }}'">로그인</button>
+        <button class="signup-btn" onclick="location.href='{{ url_for('signup') }}'">회원가입</button>
+      {% endif %}
     </div>
+    
+
   </div>
 
   <div class="header-bottom">
