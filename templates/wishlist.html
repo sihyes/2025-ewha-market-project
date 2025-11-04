@@ -1,15 +1,28 @@
-
 {% extends "index.html" %}
 
 {% block content %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/wishlist.css') }}">
-<script src="{{ url_for('static', filename='js/wishlist.js') }}"></script>
 
 <div class="wishlist-page">
-  <h1 style="color:#00462A">찜한 상품</h1>
+  <h1>찜한 상품</h1>
 
-  <div class="wishlist-grid" id="wishlistContainer">
-    <!-- JS로 찜한 상품 불러오기 -->
+  <div class="wishlist-grid">
+    {% for w in items %}
+      <div class="wishlist-item" id="item-{{ w.val().item_id }}">
+        <img src="{{ w.val().item_img }}" alt="{{ w.val().item_name }}">
+        <div class="item-info">
+          <p class="item-name">{{ w.val().item_name }}</p>
+          <p class="item-price">{{ w.val().item_price }}원</p>
+        </div>
+        <button class="wishlist-btn wished" 
+                onclick="toggleWishlist('{{ w.val().item_id }}', this)">
+          <img src="{{ url_for('static', filename='img/heart-fill.svg') }}" alt="찜">
+        </button>
+      </div>
+    {% else %}
+      <p>찜한 상품이 없습니다😢</p>
+    {% endfor %}
   </div>
 </div>
+
 {% endblock content %}

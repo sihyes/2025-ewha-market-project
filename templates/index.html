@@ -2,6 +2,7 @@
 <html>
 <head>
 <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<script src="{{ url_for('static', filename='js/auth.js') }}"></script>
 </head>
 
 <body>
@@ -38,7 +39,7 @@
     </nav>
 
     <button class="cart-btn" onclick="location.href='{{ url_for('wishlist') }}'">
-      <img src="{{ url_for('static', filename='img/Shopping-bag.svg') }}" alt="장바구니" />
+      <img src="{{ url_for('static', filename='img/heart.svg') }}" alt="장바구니" />
     </button>
   </div>
 </header>

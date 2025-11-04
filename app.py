@@ -26,16 +26,10 @@ def product_register():
 @app.route('/review-register')
 def review_register():
     return render_template('review-register.html')
-
+#------회원가입
 @app.route("/signup")
 def signup():
     return render_template("signup.html")
-
-@app.route('/check_duplicate')
-def check_duplicate():
-    user_id = request.args.get('id')
-    exists = not DB.user_duplicate_check(user_id)  # 중복이면 False를 반환하니까 반전
-    return jsonify({"exists": exists})
 
 @app.route("/signup_post", methods=['POST'])
 def register_user():
@@ -48,9 +42,12 @@ def register_user():
         flash("user id already exist!")
         return render_template("signup.html")
 
-@app.route("/wishlist")
-def wishlist():
-    return render_template("wishlist.html")
+@app.route('/check_duplicate')
+def check_duplicate():
+    user_id = request.args.get('id')
+    exists = not DB.user_duplicate_check(user_id)  # 중복이면 False를 반환하니까 반전
+    return jsonify({"exists": exists})
+
 
 @app.route("/submit_item_post", methods=['POST'])
 def reg_item_submit_post(): 
@@ -59,12 +56,9 @@ def reg_item_submit_post():
     data=request.form
     DB.insert_item(data['name'], data, image_file.filename)
     return render_template("submit_item_result.html", data=data, img_path= "static/images/{}".format(image_file.filename))
-
+#----------------로그인
 @app.route("/login", methods=["GET", "POST"])
 def login():
-    if 'user' in session:
-        return redirect(url_for('index'))
-
     if request.method == "POST":
         user_id = request.form['id']
         pw = request.form['pw']
@@ -80,6 +74,28 @@ def login():
         return redirect(url_for('login'))
     else:
         return render_template("login.html")
+    
+#--------찜
+@app.route("/wishlist")
+def wishlist():
+    if 'user' not in session:
+        flash("로그인이 필요합니다.")
+        return render_template("login.html")
+
+    user_id = session['user']
+    wishlist_items = DB.db.child("wishlist").order_by_child("user_id").equal_to(user_id).get()
+    return render_template("wishlist.html", items=wishlist_items)
+
+@app.route("/toggle_wishlist/<item_id>", methods=["POST"])
+def toggle_wishlist(item_id):
+    if 'user' not in session:
+        return {"success": False, "msg": "로그인이 필요합니다."}
+
+    user_id = session['user']
+    wished = DB.toggle_wishlist(user_id, item_id)
+    
+    return {"success": True, "wished": wished}
+
 
 
 @app.route("/logout")
