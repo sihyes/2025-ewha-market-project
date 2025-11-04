@@ -2,6 +2,16 @@ from flask import Flask, render_template, request
 import os
 from werkzeug.utils import secure_filename
 
+products = [
+    {'id': 101, 'name': '롬앤 컬러 립글로스', 'price': 9900, 'image': 'static/img/romn_gloss.jpeg'},
+    {'id': 102, 'name': '맥 립스틱', 'price': 10000, 'image': 'static/img/lipstick.jpeg'},
+    {'id': 103, 'name': '맨유 유니폼(호날두)', 'price': 70000, 'image': 'static/img/uniform.jpeg'},
+    {'id': 104, 'name': '나이키 운동화(250)', 'price': 40000, 'image': 'static/img/shoes_nike.jpeg'},
+    {'id': 105, 'name': '탁상용 선풍기', 'price': 10000, 'image': 'static/img/fan.jpeg'},
+    {'id': 106, 'name': '자라 운동화(235)', 'price': 30000, 'image': 'static/img/shoes_zara.jpeg'},
+    {'id': 107, 'name': '전공책(기본간호수기)', 'price': 5000, 'image': 'static/img/book.jpeg'},
+]
+
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'static/uploads'  # 업로드 파일 저장 경로
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
@@ -65,9 +75,8 @@ def result():
         region=region, 
         condition=condition, 
         description=description, 
-        image_url=image_url if image_url else None, image_file=uploaded_file_path )
-
-products=[] #임시 작성 코드, 변경 필요 
+        image_url=image_url if image_url else None, 
+        image_file=uploaded_file_path )
 
 @app.route('/product/<int:product_id>')
 def product_detail(product_id):
