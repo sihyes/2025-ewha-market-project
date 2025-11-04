@@ -1,0 +1,31 @@
+{% extends "index.html" %}
+
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
+
+{% with mesg = get_flashed_messages() %}
+{% if mesg != [] %}
+<script>alert("{{ mesg[0] }}")</script>
+{% endif %}
+{% endwith %}
+
+<div class="auth-container">
+  <h2>회원가입</h2>
+  <form method="post" action="{{ url_for('signup') }}" class="auth-form">
+
+    <div class="id-row">
+      <input type="text" name="id" placeholder="ID" required>
+      <button type="button" class="small-btn">중복확인</button>
+    </div>
+
+    <input type="password" name="pw" placeholder="Password" required>
+    <input type="email" name="email" placeholder="Email" required>
+    <input type="tel" name="phone" placeholder="Phone (010-1234-5678)" required>
+    <button type="submit" class="auth-btn">회원가입</button>
+  </form>
+
+  <p class="switch-link">이미 계정이 있으신가요?
+    <a href="{{ url_for('login') }}">로그인</a>
+  </p>
+</div>
+{% endblock content %}

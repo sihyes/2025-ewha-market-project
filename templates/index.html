@@ -2,6 +2,8 @@
 <html>
 <head>
 <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
+</head>
 </head>
 <body>
 <header>
@@ -13,8 +15,8 @@
 
 
     <div class="auth-buttons">
-      <button class="login-btn">로그인</button>
-      <button class="signup-btn">회원가입</button>
+      <button class="login-btn" onclick="location.href='{{ url_for('login') }}'">로그인</button>
+      <button class="signup-btn" onclick="location.href='{{ url_for('signup') }}'">회원가입</button>
     </div>
   </div>
 
@@ -29,7 +31,7 @@
       </ul>
     </nav>
 
-    <button class="cart-btn">
+    <button class="cart-btn" onclick="location.href='{{ url_for('wishlist') }}'">
       <img src="{{ url_for('static', filename='img/Shopping-bag.svg') }}" alt="장바구니" />
     </button>
   </div>
