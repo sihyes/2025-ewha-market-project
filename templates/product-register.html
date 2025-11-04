@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/product-register.css') }}"
+    />
+  </head>
+  <body>
+    <header>
+      <div class="header-top">
+        <div class="search">
+          <a>Ctrl+Z : EWHA MARKET PLACE</a>
+        </div>
+
+        <div class="auth-buttons">
+          <button class="login-btn">로그인</button>
+          <button class="signup-btn">회원가입</button>
+        </div>
+      </div>
+
+      <div class="header-bottom">
+        <nav class="nav-menu">
+          <ul>
+            <li><a href="{{ url_for('index') }}">홈</a></li>
+            <li><a href="{{ url_for('feature_list') }}">상품 전체보기</a></li>
+            <li><a href="{{ url_for('review_list') }}">리뷰 전체보기</a></li>
+            <li>
+              <a href="{{ url_for('product_register') }}">상품 등록하기</a>
+            </li>
+            <li>
+              <a href="{{ url_for('review_register') }}">리뷰 등록하기</a>
+            </li>
+          </ul>
+        </nav>
+
+        <button class="cart-btn">
+          <img
+            src="{{ url_for('static', filename='img/Shopping-bag.svg') }}"
+            alt="장바구니"
+          />
+        </button>
+      </div>
+    </header>
+
+    <main>
+      <h1>상품 등록</h1>
+
+      <form id="product-form" action="/result" method="POST">
+        <label>
+          판매자 아이디:
+          <input type="text" name="seller_id" required />
+        </label>
+        <br />
+
+        <label>
+          상품 이름:
+          <input type="text" name="name" required />
+        </label>
+        <br />
+
+        <label>
+          가격:
+          <input type="number" name="price" required />
+        </label>
+        <br />
+
+        <label>
+          지역:
+          <input type="text" name="region" required />
+        </label>
+        <br />
+
+        <label>
+          상태:
+          <select name="condition" required>
+            <option value="">선택</option>
+            <option value="new">새상품</option>
+            <option value="used">중고</option>
+          </select>
+        </label>
+        <br />
+
+        <label>
+          설명:
+          <textarea name="description" rows="4" required></textarea>
+        </label>
+        <br />
+
+        <label>
+          대표 사진:
+          <input type="text" name="image_url" placeholder="외부 URL 입력" />
+        </label>
+        <br />
+
+        <label>
+          또는 내부 파일 업로드:
+          <input type="file" name="image_file" accept="image/*" />
+        </label>
+        <br />
+
+        <button type="submit">등록</button>
+      </form>
+    </main>
+
+    <footer>
+      <div class="footer-bottom">
+        <nav class="footer-menu">
+          <ul>
+            <li><a href="{{ url_for('index') }}">홈</a></li>
+            <li><a href="{{ url_for('feature_list') }}">상품 전체보기</a></li>
+            <li><a href="{{ url_for('review_list') }}">리뷰 전체보기</a></li>
+            <li>
+              <a href="{{ url_for('product_register') }}">상품 등록하기</a>
+            </li>
+            <li>
+              <a href="{{ url_for('review_register') }}">리뷰 등록하기</a>
+            </li>
+          </ul>
+        </nav>
+      </div>
+
+      <p class="footer-copy">© Copyright 2025 - Ctrl+Z</p>
+    </footer>
+  </body>
+</html>
