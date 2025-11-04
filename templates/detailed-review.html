@@ -1,43 +1,7 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8">
-    <title>리뷰 상세보기</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/review.css') }}">
-</head>
-<body>
-<header>
-  <div class="header-top">
-    <div class = "search">
-      <a>Ctrl+Z : EWHA MARKET PLACE</a>
-    </div>
+{% extends "index.html" %}
 
-
-    <div class="auth-buttons">
-      <button class="login-btn">로그인</button>
-      <button class="signup-btn">회원가입</button>
-    </div>
-  </div>
-
-  <div class="header-bottom">
-    <nav class="nav-menu">
-      <ul>
-        <li><a href="{{ url_for('index') }}">홈</a></li>
-        <li><a href="{{ url_for('feature_list') }}">상품 전체보기</a></li>
-        <li><a href="{{ url_for('review_list') }}">리뷰 전체보기</a></li>
-        <li><a href="{{ url_for('product_register') }}">상품 등록하기</a></li>
-        <li><a href="{{ url_for('review_register') }}">리뷰 등록하기</a></li>
-      </ul>
-    </nav>
-
-    <button class="cart-btn">
-      <img src="{{ url_for('static', filename='img/Shopping-bag.svg') }}" alt="장바구니" />
-    </button>
-  </div>
-</header>
-
-<main>
-    <div class="detail-content-area"> 
+{% block content %}
+<div class="detail-content-area"> 
         
         <div class="detail-image-box"> 
             <img id="detail-image" src="/static/img/review_lipgloss.jpg" alt="리뷰 상품 이미지" class="review-detail-img">
@@ -55,27 +19,5 @@
             </div>
            
         </div>
-    </div>
-    
-</main>
-
-<footer>
-
-  <div class="footer-bottom">
-    <nav class="footer-menu">
-    <ul>
-      <li><a href="{{ url_for('index') }}">홈</a></li>
-      <li><a href="{{ url_for('feature_list') }}">상품 전체보기</a></li>
-      <li><a href="{{ url_for('review_list') }}">리뷰 전체보기</a></li>
-      <li><a href="{{ url_for('product_register') }}">상품 등록하기</a></li>
-      <li><a href="{{ url_for('review_register') }}">리뷰 등록하기</a></li>
-    </ul>
-    </nav>
-  </div>
-
-  <p class="footer-copy">© Copyright 2025 - Ctrl+Z</p>
-</footer>
-
-<script src="{{ url_for('static', filename='js/review-list.js') }}"></script>
-</body>
-</html>
+</div>
+{% endblock content %}
