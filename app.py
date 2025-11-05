@@ -5,15 +5,6 @@ import hashlib
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "helloosp"
 
-# from flask import Flask, render_template, request
-# import os
-# from werkzeug.utils import secure_filename
-
-# app = Flask(__name__)
-# app.config['UPLOAD_FOLDER'] = 'static/uploads'  # 업로드 파일 저장 경로
-# os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
-# >>>>>>> main | 기존 지유님이 하셨던 부분. 수정 확인하시고 머지하세요!
-
 DB = DBhandler()
 @app.route('/')
 def index():
