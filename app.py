@@ -32,7 +32,7 @@ def signup():
 
 @app.route("/signup_post", methods=['POST'])
 def register_user():
-    data=request.form
+    data = request.form
     pw = request.form['pw']
     pw_hash = hashlib.sha256(pw.encode('utf-8')).hexdigest()
     if DB.insert_user(data, pw_hash):
