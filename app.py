@@ -23,12 +23,6 @@ def index():
 def feature_list():
     return render_template('feature-list.html',products=products)
 
-
-@app.route('/product-detail')
-def product_detail():
-    return render_template('product-detail.html',products=products)
-
-
 @app.route('/review-list')
 def review_list():
     return render_template('review-list.html')
