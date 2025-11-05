@@ -1,47 +1,56 @@
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>상품 상세 페이지</title>
+{% extends "index.html" %}
+{% block title %}상품 상세 페이지{% endblock %}
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/product-detail.css') }}">
 
-  <style>
-        .product-detail {
-      display: flex; 
-      align-items: flex-start; 
-      gap: 20px; 
-    }
-  </style>
-</head>
-<body>
 
-  <div class="product-detail">
 
-    <!-- 왼쪽: 상품 이미지 -->
-    <div class="product-image">
-    <img src="product-detail_images/product-detail_1.webp" alt="상품 이미지" width="500">
-    </div>
+<div class="product-detail">
 
-    <!-- 오른쪽: 상품 정보 -->
-    <div class="product-info">
-      <h2>컬러 립글로스</h2>
 
-      <p>
-        어떤 피부톤이든 너무 잘 어울리는 립스틱<br>
-        고급스러운 색감으로 언제 어디서나 분위기를 만들어주는 핑크빛 립글로스
-      </p>
 
-      <p><strong>가격:</strong> ₩9,900</p>
+  <!-- 왼쪽: 상품 이미지 -->
 
-      <p>
-        <a href="buy.html">구매하기</a> |
-         <a href="buy.html">리뷰 보러가기</a> |
-        <a href="wishlist.html">찜하기</a>
-      </p>
-    </div>
+<div class="product-image">
+
+<div class="product-image">
+
+    <img src="{{ url_for('static', filename=product.image) }}" alt="{{ product.name }}">
+
+</div></div>
+
+
+
+  <!-- 오른쪽: 상품 정보 -->
+
+  <div class="product-info">
+
+    <h2>{{ product.name }}</h2>
+
+    <p><strong>가격:</strong> ₩{{ "{:,}".format(product.price) }}</p>
+
+    <p>
+
+
+<a href="#">구매하기</a> |
+
+<a href="{{ url_for('review_list') }}">리뷰 보러가기</a>
+
+
+      <button class="wishlist-btn wished"
+
+              onclick="toggleWishlist('{{ product.id }}', this)">
+
+        <img src="{{ url_for('static', filename='img/heart-fill.svg') }}" alt="찜">
+
+      </button>
+
+    </p>
 
   </div>
 
-</body>
-</html>
 
+
+</div>
+
+{% endblock %}
