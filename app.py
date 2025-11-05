@@ -35,7 +35,7 @@ def register_user():
     data=request.form
     pw = request.form['pw']
     pw_hash = hashlib.sha256(pw.encode('utf-8')).hexdigest()
-    if DB.insert_user(data,pw_hash):
+    if DB.insert_user(data, pw_hash):
         return render_template("login.html")
     else:
         flash("user id already exist!")
