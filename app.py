@@ -8,11 +8,11 @@ app.config["SECRET_KEY"] = "helloosp"
 DB = DBhandler()
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return render_template('home.html')
 
 @app.route('/feature-list')
 def feature_list():
-    return render_template('feature-list.html')
+    return render_template('feature-list.html', products=products)
 
 @app.route('/review-list')
 def review_list():
@@ -132,17 +132,29 @@ def result():
     print("이미지 URL:", image_url)
     print("업로드 파일 경로:", uploaded_file_path)
 
-    return render_template(
-        'result.html',
-        seller_id=seller_id,
-        name=name,
-        price=price,
-        region=region,
-        condition=condition,
-        description=description,
-        image_url=image_url if image_url else None,
-        image_file=uploaded_file_path
-    )
+    return render_template( 
+        'result.html', 
+        seller_id=seller_id, 
+        name=name, 
+        price=price, 
+        region=region, 
+        condition=condition, 
+        description=description, 
+        image_url=image_url if image_url else None, image_file=uploaded_file_path )
 
+products=[] #임시 작성 코드, 변경 필요 
+
+@app.route('/product/<int:product_id>')
+def product_detail(product_id):
+    # product_id에 해당하는 상품 찾기
+    product = next((p for p in products if p['id'] == product_id), None)
+    
+    if not product:
+        return "해당 상품을 찾을 수 없습니다.", 404
+
+    # product-detail.html 템플릿으로 상품 데이터 전달
+    return render_template('product-detail.html', product=product)
+
+    
 if __name__ == '__main__':
     app.run(debug=True)
