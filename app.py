@@ -35,11 +35,16 @@ def product_register():
 def review_register():
     return render_template('review-register.html')
 
-@app.route("/product/<int:product_id>")
+@app.route('/product/<int:product_id>')
 def product_detail(product_id):
-    product = Product.query.get(product_id)
-    return render_template("product-detail.html", product=product)
+    # product_id에 해당하는 상품 찾기
+    product = next((p for p in products if p['id'] == product_id), None)
+    
+    if not product:
+        return "해당 상품을 찾을 수 없습니다.", 404
 
+    # product-detail.html 템플릿으로 상품 데이터 전달
+    return render_template('product-detail.html', product=product)
 
 if __name__ == '__main__':
     app.run(debug=True)
