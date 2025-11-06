@@ -54,21 +54,34 @@ class DBhandler:
         return items
 
     def toggle_wishlist(self, user_id, item_id):
-        """
-        user_id와 item_id 조합으로 찜 상태를 토글.
-        True → 찜 완료, False → 찜 해제
-        """
         key_combo = f"{user_id}_{item_id}"
         wishlist = self.db.child("wishlist").order_by_child("user_id_item_id").equal_to(key_combo).get()
-        
+
         if wishlist.val():  # 이미 찜 → 해제
             for w in wishlist.each():
                 self.db.child("wishlist").child(w.key()).remove()
             return False
-        else:  # 찜 안됨 → 등록
+        else:
+            # 🔹 item_id를 이용해 상품 정보 가져오기
+            product = self.db.child("products").child(str(item_id)).get()
+            if product.val():
+                p = product.val()
+                item_name = p.get("name", "이름 없음")
+                item_price = p.get("price", 0)
+                item_img = p.get("image", "/static/img/default.png")
+            else:
+                # 혹시 product DB에 없을 경우 대비
+                item_name = "알 수 없는 상품"
+                item_price = 0
+                item_img = "/static/img/default.png"
+
+            # 🔹 찜 정보 Firebase에 저장
             self.db.child("wishlist").push({
                 "user_id": user_id,
                 "item_id": item_id,
+                "item_name": item_name,
+                "item_price": item_price,
+                "item_img": item_img,
                 "user_id_item_id": key_combo
             })
-            return True
+            return True    

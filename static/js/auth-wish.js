@@ -26,10 +26,11 @@ function toggleWishlist(itemId, btn){
         if(data.wished){
           // 찜 등록 → 버튼 채워진 하트
           btn.classList.add("wished")
+          alert("상품을 찜했습니다 💚");
         } else {
           // 찜 해제 → 버튼 비운 하트
           btn.classList.remove("wished")
-          // 화면에서 바로 제거
+          alert("찜하기를 취소했습니다 💔");
           const itemEl = document.getElementById(`item-${itemId}`);
           if(itemEl) itemEl.remove();
         }

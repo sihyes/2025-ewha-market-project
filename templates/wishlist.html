@@ -8,15 +8,15 @@
 
   <div class="wishlist-grid">
     {% for w in items %}
-      <div class="wishlist-item" id="item-{{ w.val().item_id }}">
-        <img src="{{ w.val().item_img }}" alt="{{ w.val().item_name }}">
+      <div class="wishlist-item" id="item-{{ w.item_id }}">
+        <img src="{{ w.item_img }}" alt="{{ w.item_name }}">
         <div class="item-info">
-          <p class="item-name">{{ w.val().item_name }}</p>
-          <p class="item-price">{{ w.val().item_price }}원</p>
+          <p class="item-name">{{ w.item_name }}</p>
+          <p class="item-price">{{ w.item_price }}원</p>
         </div>
         <button class="wishlist-btn wished" 
-                onclick="toggleWishlist('{{ w.val().item_id }}', this)">
-          <img src="{{ url_for('static', filename='img/heart-fill.svg') }}" alt="찜">
+                onclick="toggleWishlist('{{ w.item_id }}', this)">
+          <img src="{{ url_for('static', filename='img/heart.svg') }}" alt="찜">
         </button>
       </div>
     {% else %}

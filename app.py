@@ -48,14 +48,6 @@ def check_duplicate():
     return jsonify({"exists": exists})
 
 
-# @app.route("/submit_item_post", methods=['POST'])
-# def reg_item_submit_post(): 
-#     image_file=request.files["file"]
-#     image_file.save("static/image/{}".format(image_file.filename))
-#     data=request.form
-#     DB.insert_item(data['name'], data, image_file.filename)
-#     return render_template("submit_item_result.html", data=data, img_path= "static/images/{}".format(image_file.filename))
-
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
@@ -82,7 +74,34 @@ def wishlist():
         return render_template("login.html")
 
     user_id = session['user']
-    wishlist_items = DB.db.child("wishlist").order_by_child("user_id").equal_to(user_id).get()
+    wishlist_data = DB.db.child("wishlist").order_by_child("user_id").equal_to(user_id).get()
+
+        # .val()을 풀어서 리스트로 변환
+    wishlist_items = []
+    if wishlist_data.each():
+        for item in wishlist_data.each():
+            data = item.val()
+            item_id = data.get("item_id")
+
+            # 🔍 product DB에서 해당 상품 정보 가져오기
+            product_ref = DB.db.child("products").order_by_child("item_id").equal_to(item_id).get()
+            if product_ref.each():
+                product_info = product_ref.each()[0].val()
+                wishlist_items.append({
+                    "item_id": product_info.get("item_id"),
+                    "item_name": product_info.get("name"),
+                    "item_price": product_info.get("price"),
+                    "item_img": product_info.get("image")
+                })
+            else:
+                # 상품 DB에 없을 때 대비
+                wishlist_items.append({
+                    "item_id": item_id,
+                    "item_name": "알 수 없는 상품",
+                    "item_price": "정보 없음",
+                    "item_img": url_for('static', filename='img/default.png')
+                })
+
     return render_template("wishlist.html", items=wishlist_items)
 
 @app.route("/toggle_wishlist/<item_id>", methods=["POST"])
