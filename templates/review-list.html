@@ -1,0 +1,17 @@
+{% extends "index.html" %}
+
+{% block content %}
+<div class="review-header-top">
+    <h1>리뷰 전체 보기</h1>
+    <p class="review-count">현재까지 <span id="review-count">0개</span> 리뷰 등록됨</p>
+</div>
+
+<section class="review-grid" id="review-list-container">
+</section>
+
+<script src="{{ url_for('static', filename='js/review-list.js') }}"></script>
+<script>
+    // 'detailed_review' 기본 경로만 사용하고 추후에 리뷰어 id까지 활용
+    const DETAIL_URL_PATTERN = "{{ url_for('detailed_review') }}"; 
+</script>
+{% endblock content %}
