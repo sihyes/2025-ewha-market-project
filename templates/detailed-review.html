@@ -1,23 +1,24 @@
 {% extends "index.html" %}
 
 {% block content %}
-<div class="detail-content-area"> 
-        
-        <div class="detail-image-box"> 
-            <img id="detail-image" src="/static/img/review_lipgloss.jpg" alt="리뷰 상품 이미지" class="review-detail-img">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/review.css') }}">
+<div class="detail-content-area">
+
+    <div class="detail-image-box">
+        <img id="detail-image" src="/static/img/review_lipgloss.jpg" alt="리뷰 상품 이미지" class="review-detail-img">
+    </div>
+
+    <div class="detail-info-box">
+        <p>상품명: <span id="detail-product-name">컬러 립글로스</span></p>
+        <p>리뷰 제목: <span id="detail-title">부드럽게 잘 발려요!</span></p>
+        <p>별점: <span id="detail-rating" class="rating-stars">★★★★☆</span></p>
+        <p class="review-writer">리뷰어 아이디: <span id="detail-writer-id">abc1234</span></p>
+        <div class="detail-content-box">
+            <p id="detail-content"> 누디한 색상도 마음에 들고 입술 주름이 펴지면서 예쁜 광택이 생겨요!
+                다른 색상으로 또 사볼까 합니다.
+            </p>
         </div>
-        
-        <div class="detail-info-box">
-            <p>상품명: <span id="detail-product-name">컬러 립글로스</span></p>
-            <p>리뷰 제목: <span id="detail-title">부드럽게 잘 발려요!</span></p>
-            <p>별점: <span id="detail-rating" class="rating-stars">★★★★☆</span></p>
-            <p class="review-writer">리뷰어 아이디: <span id="detail-writer-id">abc1234</span></p>
-            <div class="detail-content-box"> 
-                <p id="detail-content">   누디한 색상도 마음에 들고 입술 주름이 펴지면서 예쁜 광택이 생겨요!
-   다른 색상으로 또 사볼까 합니다.
-</p>
-            </div>
-           
-        </div>
+
+    </div>
 </div>
 {% endblock content %}

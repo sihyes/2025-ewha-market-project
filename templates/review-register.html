@@ -1,8 +1,11 @@
 {% extends "index.html" %}
 
 {% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/review.css') }}">
 <div class="register-form-container">
-  <h1><리뷰 작성란></h1>
+  <h1>
+    <리뷰 작성란>
+  </h1>
   <form id="review-form">
     <div class="form-group-row">
       <div class="form-group id-group">
@@ -12,20 +15,21 @@
       <div class="form-group photo-upload-group">
         <label for="review-photo" class="photo-label">사진:</label>
         <input type="file" id="review-photo" name="photo" accept="image/*" style="display: none;">
-        <button type="button" class="file-upload-btn" onclick="document.getElementById('review-photo').click()">파일 선택</button>
+        <button type="button" class="file-upload-btn" onclick="document.getElementById('review-photo').click()">파일
+          선택</button>
       </div>
     </div>
-        
+
     <div class="form-group">
       <label for="review-product-name">상품명:</label>
       <input type="text" id="review-product-name" name="product_name" required>
     </div>
-        
+
     <div class="form-group">
       <label for="review-title">리뷰 제목:</label>
       <input type="text" id="review-title" name="title" required>
     </div>
-        
+
     <div class="form-group rating-group">
       <label>별점을 매겨주세요:</label>
       <div>
@@ -37,13 +41,13 @@
         <input type="hidden" id="review-rating-value" name="rating" value="0">
       </div>
     </div>
-          
+
     <p class="content-label">만족했던 점, 아쉬웠던 점 등을 담은 한줄평을 써주세요♡:</p>
     <div class="form-group textarea-group">
       <textarea id="review-content" name="content" rows="6" required></textarea>
     </div>
-        
-    <div class="submit-area"> 
+
+    <div class="submit-area">
       <button type="submit" class="submit-btn">제출!!</button>
     </div>
 
