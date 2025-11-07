@@ -5,30 +5,14 @@
 {% block content %}
   <link rel="stylesheet" href="{{ url_for('static', filename='css/feature-list.css') }}">
 
-  {% set dummy_products = [
-    {'name': '롬앤 컬러 립글로스', 'price': 9900, 'image': url_for('static', filename='img/romn_gloss.jpeg')},
-    {'name': '맥 립스틱', 'price': 10000, 'image': url_for('static', filename='img/lipstick.jpeg')},
-    {'name': '맨유 유니폼(호날두)', 'price': 70000, 'image': url_for('static', filename='img/uniform.jpeg')},
-    {'name': '나이키 운동화(250)', 'price': 40000, 'image': url_for('static', filename='img/shoes_nike.jpeg')},
-    {'name': '탁상용 선풍기', 'price': 10000, 'image': url_for('static', filename='img/fan.jpeg')},
-    {'name': '자라 운동화(235)', 'price': 30000, 'image': url_for('static', filename='img/shoes_zara.jpeg')},
-    {'name': '전공책(기본간호수기)', 'price': 5000, 'image': url_for('static', filename='img/book.jpeg')},
-  ] %}
-
-  {% if products %}
-    {% set display_products = dummy_products+products %}
-  {% else %}
-    {% set display_products = dummy_products %}
-  {% endif %}
-
   <h4 id="totalCount">
-    전체 상품 조회 결과: <span class="count-number">{{ display_products|length }}</span>개
+    전체 상품 조회 결과: <span class="count-number">{{ products|length }}</span>개
   </h4>
 
   <div class="product-grid" id="productContainer">
-    {% for p in display_products %}
+    {% for p in products %}
       <div class="product-card" data-id="{{loop.index}}">
-        <img src="{{ p.image }}" alt="{{ p.name }}">
+        <img src="{{ url_for('static', filename=p.image) }}" alt="{{ p.name }}">
         <p><strong>{{ p.name }}</strong></p>
         <p>₩{{ "{:,}".format(p.price) }}</p>
         <div class="product-buttons">
@@ -38,6 +22,15 @@
       </div>
     {% endfor %}
   </div>
+
+ 
+  <script>
+  const wishedItems = JSON.parse('{{ wished_item_ids | tojson | safe }}');
+  </script>
+
+  </script>
+
+
   <script src="{{ url_for('static', filename='js/feature-list.js') }}"></script>
 
 {% endblock %}
