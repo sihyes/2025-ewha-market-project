@@ -12,7 +12,7 @@
   <div class="product-grid" id="productContainer">
     {% for p in products %}
       <div class="product-card" data-id="{{loop.index}}">
-        <img src="{{ p.image }}" alt="{{ p.name }}">
+        <img src="{{ url_for('static', filename=p.image) }}" alt="{{ p.name }}">
         <p><strong>{{ p.name }}</strong></p>
         <p>₩{{ "{:,}".format(p.price) }}</p>
         <div class="product-buttons">
