@@ -28,10 +28,7 @@ def index():
 
 @app.route('/feature-list')
 def feature_list():
-    # DBhandler의 get_items() 함수를 통해 상품 목록을 가져옵니다.
-    products = DB.get_items() 
-    
-    # 템플릿으로 상품 리스트 전달
+    products = DB.get_items()  # Firebase에서 상품 목록 가져오기
     return render_template('feature-list.html', products=products)
 
 @app.route('/review-list')
