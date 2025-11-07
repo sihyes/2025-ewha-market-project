@@ -1,0 +1,98 @@
+/* 페이지 전체를 가운데 정렬 */
+.auth-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 80px auto;
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  padding: 40px;
+}
+
+/* 제목 */
+.auth-container h2 {
+  color: #00664F;
+  margin-bottom: 25px;
+  font-size: 24px;
+}
+
+/* 입력 폼 */
+.auth-form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.auth-form input {
+  padding: 12px 15px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  background-color: #f2f2f2;
+  font-size: 14px;
+  color: #333;
+  transition: background-color 0.2s, box-shadow 0.2s;
+}
+
+.auth-form input:focus {
+  outline: none;
+  background-color: #fff;
+  box-shadow: 0 0 4px rgba(0, 102, 79, 0.3);
+}
+
+/* 버튼 */
+.auth-btn {
+  background-color: #00664F;
+  color: white;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.2s, transform 0.1s;
+}
+
+.auth-btn:hover {
+  background-color: #008060;
+  transform: translateY(-2px);
+}
+
+/* 회원가입/로그인 전환 링크 */
+.switch-link {
+  margin-top: 20px;
+  font-size: 14px;
+  color: #555;
+}
+
+.switch-link a {
+  color: #00664F;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.switch-link a:hover {
+  text-decoration: underline;
+}
+
+.id-row {
+  display: flex;
+  gap: 8px;
+}
+
+.id-row input[type="text"] {
+  flex: 1;
+}
+
+.small-btn {
+  padding: 8px 10px;
+  background-color: #00664F;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}

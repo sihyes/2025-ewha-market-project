@@ -1,3 +1,67 @@
+/* main 영역 전체 */
+main {
+  flex: 1;
+  padding: 40px 20px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+/* 제목 */
+main h1 {
+  font-size: 2rem;
+  margin-bottom: 30px;
+  text-align: center;
+  color: #094d36;
+}
+
+/* form 스타일 */
+#product-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* label 안에 input/textarea */
+#product-form label {
+  display: flex;
+  flex-direction: column;
+  font-weight: 500;
+  color: #555;
+}
+
+/* input/textarea 공통 스타일 */
+#product-form input,
+#product-form textarea {
+  padding: 10px;
+  margin-top: 5px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+#product-form input:focus,
+#product-form textarea:focus {
+  border-color: #094d36;
+}
+
+/* 제출 버튼 */
+#product-form button[type="submit"] {
+  padding: 12px;
+  font-size: 1rem;
+  background-color: #094d36;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+#product-form button[type="submit"]:hover {
+  background-color: #052a1e;
+}
+
 /* 공통 */
 header {
   width: 100%;
@@ -22,11 +86,6 @@ header {
   gap: 10px;
 }
 
-.auth-buttons p {
-  margin: 0;
-  line-height: 32px; /* 버튼과 같은 높이로 */
-}
-
 .auth-buttons button {
   background-color: #0b593f;
   color: #fff;
@@ -40,8 +99,6 @@ header {
 .auth-buttons button:hover {
   background-color: #094d36;
 }
-
-
 
 /* 하단 네비게이션 */
 .header-bottom {
@@ -84,30 +141,6 @@ header {
   height: 20px;
 }
 
-
-
-.wishlist-btn {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background-color: #ccc;
-  border: none;
-  border-radius: 50%;
-  padding: 8px;
-  cursor: pointer;
-}
-
-.wishlist-btn img {
-  width: 20px;
-  height: 20px;
-  filter: brightness(0) invert(1);
-}
-
-.wishlist-btn.wished {
-  background-color: #00462A;
-}
-
-
 /* footer 공통 */
 footer {
   background-color: #f5f9f8;
@@ -123,7 +156,6 @@ footer {
   justify-content: center;
   margin-bottom: 30px;
 }
-
 
 /* 하단 네비게이션 */
 .footer-bottom ul {

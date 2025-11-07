@@ -1,0 +1,28 @@
+{% extends "index.html" %}
+{% block title %}상품 등록완료 페이지{% endblock %}
+{% block content %}
+
+      <h1>상품 등록 완료</h1>
+      <p>판매자 아이디: {{ seller_id }}</p>
+      <p>상품명: {{ name }}</p>
+      <p>가격: {{ price }}</p>
+      <p>지역: {{ region }}</p>
+      <p>상태: {{ condition }}</p>
+      <p>설명: {{ description }}</p>
+      {% if image_url %}
+      <p>
+        대표 사진(URL):
+        <img src="{{ image_url }}" alt="상품 이미지" style="max-width: 200px" />
+      </p>
+      {% elif image_file %}
+      <p>
+        대표 사진(업로드):
+        <img
+          src="{{ image_file }}"
+          alt="상품 이미지"
+          style="max-width: 200px"
+        />
+      </p>
+      {% endif %}
+      <a href="/">홈으로 돌아가기</a>
+{% endblock %}
