@@ -1,51 +1,43 @@
-<!--
 {% extends "index.html" %}
 
 {% block title %}상품 전체 조회{% endblock %}
 
 {% block content %}
-<h1>상품 전체 조회 화면</h1>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/feature-list.css') }}">
+
+  {% set dummy_products = [
+    {'name': '롬앤 컬러 립글로스', 'price': 9900, 'image': url_for('static', filename='img/romn_gloss.jpeg')},
+    {'name': '맥 립스틱', 'price': 10000, 'image': url_for('static', filename='img/lipstick.jpeg')},
+    {'name': '맨유 유니폼(호날두)', 'price': 70000, 'image': url_for('static', filename='img/uniform.jpeg')},
+    {'name': '나이키 운동화(250)', 'price': 40000, 'image': url_for('static', filename='img/shoes_nike.jpeg')},
+    {'name': '탁상용 선풍기', 'price': 10000, 'image': url_for('static', filename='img/fan.jpeg')},
+    {'name': '자라 운동화(235)', 'price': 30000, 'image': url_for('static', filename='img/shoes_zara.jpeg')},
+    {'name': '전공책(기본간호수기)', 'price': 5000, 'image': url_for('static', filename='img/book.jpeg')},
+  ] %}
+
+  {% if products %}
+    {% set display_products = dummy_products+products %}
+  {% else %}
+    {% set display_products = dummy_products %}
+  {% endif %}
+
+  <h4 id="totalCount">
+    전체 상품 조회 결과: <span class="count-number">{{ display_products|length }}</span>개
+  </h4>
+
+  <div class="product-grid" id="productContainer">
+    {% for p in display_products %}
+      <div class="product-card" data-id="{{loop.index}}">
+        <img src="{{ p.image }}" alt="{{ p.name }}">
+        <p><strong>{{ p.name }}</strong></p>
+        <p>₩{{ "{:,}".format(p.price) }}</p>
+        <div class="product-buttons">
+            <a href="/product/{{ p.id if p.id else loop.index }}" class="detail-btn">상세 페이지</a>
+            <button class="like-btn" data-item-id="{{ p.id if p.id else loop.index }}">찜하기</button>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+  <script src="{{ url_for('static', filename='js/feature-list.js') }}"></script>
+
 {% endblock %}
--->
-
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>상품 전체보기</title>
-    <link
-      rel="stylesheet"
-      href="{{ url_for('static', filename='css/style.css') }}"
-    />
-  </head>
-  <body>
-    <header>
-      <!-- 헤더 그대로 사용 -->
-    </header>
-
-    <main>
-      <h1>상품 전체보기</h1>
-
-      {% if products %}
-      <ul>
-        {% for p in products %}
-        <li style="margin-bottom: 30px">
-          <h2>{{ p.name }} - {{ p.price }}원</h2>
-          <p>{{ p.description }}</p>
-          <img
-            src="{{ p.image }}"
-            alt="{{ p.name }}"
-            style="max-width: 200px"
-          />
-        </li>
-        {% endfor %}
-      </ul>
-      {% else %}
-      <p>등록된 상품이 없습니다.</p>
-      {% endif %}
-    </main>
-
-    <footer>
-      <!-- 푸터 그대로 사용 -->
-    </footer>
-  </body>
-</html>

@@ -1,0 +1,9 @@
+.home-container {
+  text-align: center; 
+  margin-top: 10px;
+}
+
+.home-container img {
+  width: 540px; 
+  height: auto; 
+}
