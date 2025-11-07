@@ -1,0 +1,80 @@
+.product-detail {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 40px;
+  padding: 40px;
+}
+
+.product-image img {
+  width: 400px;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.product-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 20px;
+  max-width: 500px;
+}
+
+.product-info h2 {
+  font-size: 26px;
+  margin-bottom: 10px;
+}
+
+.product-info p {
+  font-size: 18px;
+  margin: 5px 0;
+}
+
+/* ✅ 버튼들 가로로 나열 */
+.product-buttons {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* ✅ 공통 버튼 스타일 */
+.btn {
+  display: inline-block;
+  padding: 10px 20px;
+  border-radius: 8px;
+  text-decoration: none;
+  color: white;
+  font-weight: bold;
+  transition: background 0.2s ease;
+}
+
+/* ✅ 각각 다른 색상 */
+.buy-btn {
+  background-color: #007bff;
+}
+.buy-btn:hover {
+  background-color: #0056b3;
+}
+
+.review-btn {
+  background-color: #28a745;
+}
+.review-btn:hover {
+  background-color: #1e7e34;
+}
+
+/* 찜 버튼 */
+.wishlist-btn {
+  border: none;
+  background: none;
+  cursor: pointer;
+  padding: 5px;
+}
+.wishlist-btn img {
+  width: 25px;
+  vertical-align: middle;
+  transition: transform 0.2s ease;
+}
+.wishlist-btn:hover img {
+  transform: scale(1.1);
+}
