@@ -1,4 +1,3 @@
-
 from flask import Flask, render_template, request, flash, redirect, url_for, session, jsonify
 from database import DBhandler
 import hashlib
@@ -66,6 +65,15 @@ def review_list():
 @app.route("/review-register")
 def review_register():
     return render_template('review-register.html')
+
+@app.route("/review-detail")
+def simple_review_detail():
+    """
+    모든 리뷰 카드가 연결될 하드코딩된 상세 페이지 엔드포인트입니다.
+    ID를 받지 않고, 단순히 템플릿만 렌더링합니다.
+    """
+    return render_template("detailed-review.html")
+
 #------회원가입
 @app.route("/signup")
 def signup():
