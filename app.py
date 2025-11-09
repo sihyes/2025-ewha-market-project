@@ -3,10 +3,7 @@ from database import DBhandler
 import hashlib
 
 app = Flask(__name__)
-app.config['UPLOAD_FOLDER'] = 'static/uploads'  # 업로드 파일 저장 경로
-# os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
-
-# 업로드 폴더 설정
+app.config["SECRET_KEY"] = "helloosp"
 app.config['UPLOAD_FOLDER'] = 'static/img'
 
 # 샘플 상품 목록
@@ -40,9 +37,11 @@ def feature_list():
 
     # 2. image 경로 조정 (optional)
     for p in products:
+        image = p.get("image", "")
         # 만약 DB에 '/static/img/파일명' 으로 저장되어 있으면 url_for용으로 변환
-        if p.get("image", "").startswith("/static/"):
-            p["image"] = p["image"].replace("/static/", "")
+        if image.startswith("/static/"):
+            p["image"] = image.replace("/static/", "")
+        # 외부 URL인 경우 그대로 사용 (템플릿에서 처리)
 
     # 3. 찜 목록 가져오기
     if 'user' in session:
@@ -54,8 +53,38 @@ def feature_list():
 
     return render_template('feature-list.html', products=products, wished_item_ids=wished_item_ids)
 
-@app.route('/product-register')
+@app.route('/product-register', methods=['GET', 'POST'])
 def product_register():
+    if request.method == 'POST':
+        # 폼 데이터 받기
+        seller_id = request.form.get('seller_id')
+        name = request.form.get('name')
+        price = request.form.get('price')
+        region = request.form.get('region')
+        condition = request.form.get('condition')
+        description = request.form.get('description')
+        image_url = request.form.get('image_url', '').strip()
+        
+        # 이미지 경로 처리
+        image_path = ''
+        if image_url:
+            # 외부 URL 사용
+            image_path = image_url
+        elif 'image_file' in request.files:
+            file = request.files['image_file']
+            if file and file.filename:
+                # 파일 업로드 처리 (현재는 URL만 지원, 파일은 추후 구현)
+                # 일단은 기본 이미지 사용
+                image_path = 'img/default.png'
+        
+        # Firebase에 상품 저장
+        if DB.insert_product(seller_id, name, price, region, condition, description, image_path):
+            flash('상품이 등록되었습니다.')
+            return redirect(url_for('feature_list'))
+        else:
+            flash('상품 등록에 실패했습니다.')
+            return redirect(url_for('product_register'))
+    
     return render_template('product-register.html')
 
 @app.route("/review-list")
