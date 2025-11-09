@@ -1,15 +1,18 @@
 from flask import Flask, render_template, request, flash, redirect, url_for, session, jsonify
 from database import DBhandler
 import hashlib
+import os # 파일 업로드를 위해 필요
+
 
 app = Flask(__name__)
-app.config['UPLOAD_FOLDER'] = 'static/uploads'  # 업로드 파일 저장 경로
-# os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+app.config["SECRET_KEY"] = "helloosp" 
+app.config['UPLOAD_FOLDER'] = 'static/img' # 업로드 폴더 설정 통일
+# DB handler 한 번만 생성
+DB = DBhandler()
 
-# 업로드 폴더 설정
-app.config['UPLOAD_FOLDER'] = 'static/img'
 
-# 샘플 상품 목록
+
+# 샘플 상품 목록 (위치 변경 없음)
 products = [
     {'item_id': 101, 'name': '롬앤 컬러 립글로스', 'price': 9900, 'image': 'img/romn_gloss.jpeg'},
     {'item_id': 102, 'name': '맥 립스틱', 'price': 10000, 'image': 'img/lipstick.jpeg'},
@@ -20,12 +23,6 @@ products = [
     {'item_id': 107, 'name': '전공책(기본간호수기)', 'price': 5000, 'image': 'img/book.jpeg'},
 ]
 
-DB=DBhandler()
-
-app = Flask(__name__)
-app.config["SECRET_KEY"] = "helloosp"
-
-DB = DBhandler()
 
 @app.route('/')
 def index():
@@ -58,22 +55,47 @@ def feature_list():
 def product_register():
     return render_template('product-register.html')
 
-@app.route("/review-list")
+@app.route('/review-list')
 def review_list():
-    return render_template("review-list.html") 
+    reviews = DB.get_all_reviews()
+    return render_template('review-list.html', reviews=reviews) 
 
-@app.route("/review-register")
-def review_register():
+@app.route('/review/<title>')
+def review_detail(title):
+    review = DB.get_review_by_title(title)
+    if review:
+        return render_template('detailed-review.html', review=review) 
+    else:
+        return "리뷰를 찾을 수 없습니다.", 404
+
+@app.route('/review/new', methods=['GET', 'POST'])
+def review_register(): 
+    if request.method == 'POST':
+        # 파일 업로드 로직
+        if 'photo' in request.files:
+            file = request.files['photo']
+            if file and file.filename:
+                # 💡 UPLOAD_FOLDER가 이제 정확히 정의되었으므로 작동합니다.
+                filename = file.filename
+                file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+                image_path = f'img/{filename}' 
+            else:
+                image_path = 'img/default.png'
+        else:
+            image_path = 'img/default.png'
+            
+        review_data = {
+            "review-id": request.form['review-id'], 
+            "product_name": request.form['product_name'],
+            "title": request.form['title'],
+            "rating": request.form['rating'],
+            "content": request.form['content'],
+            "image": image_path 
+        }
+        DB.add_review(review_data)
+        return redirect(url_for('review_list'))
+    
     return render_template('review-register.html')
-
-@app.route("/review-detail")
-def simple_review_detail():
-    """
-    모든 리뷰 카드가 연결될 하드코딩된 상세 페이지 엔드포인트입니다.
-    ID를 받지 않고, 단순히 템플릿만 렌더링합니다.
-    """
-    return render_template("detailed-review.html")
-
 #------회원가입
 @app.route("/signup")
 def signup():
@@ -93,7 +115,7 @@ def register_user():
 @app.route('/check_duplicate')
 def check_duplicate():
     user_id = request.args.get('id')
-    exists = not DB.user_duplicate_check(user_id)  # 중복이면 False를 반환하니까 반전
+    exists = not DB.user_duplicate_check(user_id)   # 중복이면 False를 반환하니까 반전
     return jsonify({"exists": exists})
 
 
@@ -108,8 +130,8 @@ def login():
         for u in users.each():
             value = u.val()
             if value['id'] == user_id and value['pw'] == pw_hash:
-                session['user'] = user_id  # 로그인 성공하면 세션에 저장
-                return redirect(url_for('index'))  # 로그인 후 원래 화면으로
+                session['user'] = user_id   # 로그인 성공하면 세션에 저장
+                return redirect(url_for('index'))   # 로그인 후 원래 화면으로
         flash("ID 또는 비밀번호가 잘못되었습니다.")
         return redirect(url_for('login'))
     else:
@@ -189,4 +211,38 @@ def product_detail(product_id):
 
 
 if __name__ == '__main__':
+    # 조건부 샘플 리뷰 데이터 추가
+    initial_reviews = DB.get_all_reviews() 
+
+    if not initial_reviews: 
+        sample_reviews = [
+            {
+                "review-id": "cosmelover",          
+                "product_name": "롬앤 컬러 립글로스",
+                "title": "부드럽게 잘 발려요!",
+                "rating": "4",
+                "content": "누디한 색상도 마음에 들고 입술 주름이 펴지면서 예쁜 광택이 생겨요! 다른 색상으로 또 사볼까 합니다.",
+                "image": "img/review_lipgloss.jpg"
+            },
+            {
+                "review-id": "studyabc",            
+                "product_name": "두잇 알고리즘 코딩 테스트 C++편",
+                "title": "책 상태가 좋습니다.",
+                "rating": "4",
+                "content": "누가 사용한 흔적도 거의 보이지 않고 깨끗한 책이네요.",
+                "image": "img/review_book.jpg"
+            },
+            {
+                "review-id": "hatesummer",          
+                "product_name": "Windpia 핸디 선풍기",
+                "title": "꽤 시원해요!",
+                "rating": "3",
+                "content": "단계도 4단계나 있고 꽤 시원한데 좀만 더 조용했으면 좋았을 듯",
+                "image": "img/review_fan.jpg"
+            }
+        ]
+        
+        for r in sample_reviews:
+            DB.add_review(r)
+        
     app.run(debug=True)
