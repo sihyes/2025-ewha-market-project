@@ -24,6 +24,19 @@ app.config["SECRET_KEY"] = "helloosp"
 
 DB = DBhandler()
 
+def format_price(value):
+    """숫자를 받아 쉼표로 포맷팅합니다."""
+    # 숫자가 아닌 값이 들어왔을 경우를 대비해 처리 (예: 문자열 "10000"도 처리)
+    try:
+        value = int(value)
+    except (ValueError, TypeError):
+        return value # 포맷 불가 시 원본 값 반환
+
+    return "{:,}".format(value)
+
+# Flask 앱에 필터 등록
+app.jinja_env.filters['format_price'] = format_price
+
 @app.route('/')
 def index():
     return render_template('home.html')
@@ -212,6 +225,31 @@ def product_detail(product_id):
         return "해당 상품을 찾을 수 없습니다.", 404
 
     return render_template('product-detail.html', product=product)
+
+@app.route('/purchase/<int:product_id>')
+def purchase(product_id):
+
+    products_ref = DB.db.child("products").get()
+    products = [p.val() for p in products_ref.each()] if products_ref.each() else []
+    
+    # item_id 비교하여 해당 상품 찾기
+    product = next((p for p in products if str(p['item_id']) == str(product_id)), None)
+    
+    if not product:
+        return "구매할 상품을 찾을 수 없습니다.", 404
+    
+    # image 경로 조정 
+    if product.get("image", "").startswith("/static/"):
+        product["image"] = product["image"].replace("/static/", "")
+    
+    try:
+        product['price'] = int(product['price'])
+    except ValueError:
+        product['price'] = 0
+
+    # 이제 product 변수가 정의되었으므로 템플릿에 전달할 수 있습니다.
+    return render_template('purchase.html', product=product)
+
 
 
 if __name__ == '__main__':
