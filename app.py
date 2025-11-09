@@ -129,16 +129,14 @@ def check_duplicate():
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
-        user_id = request.form['id']
+        id_ = request.form['id']
         pw = request.form['pw']
         pw_hash = hashlib.sha256(pw.encode('utf-8')).hexdigest()
 
         users = DB.db.child("user").get()
-        for u in users.each():
-            value = u.val()
-            if value['id'] == user_id and value['pw'] == pw_hash:
-                session['user'] = user_id  # 로그인 성공하면 세션에 저장
-                return redirect(url_for('index'))  # 로그인 후 원래 화면으로
+        if DB.find_user(id_,pw_hash):
+            session['user'] = id_  # 로그인 성공하면 세션에 저장
+            return redirect(url_for('index'))  # 로그인 후 원래 화면으로
         flash("ID 또는 비밀번호가 잘못되었습니다.")
         return redirect(url_for('login'))
     else:
@@ -194,8 +192,7 @@ def toggle_wishlist(item_id):
 
 @app.route("/logout")
 def logout():
-    session.pop('user', None)
-    flash("로그아웃 되었습니다.")
+    session.clear() #예제코드에 맞추어 변경
     return redirect(url_for('index'))
 
 @app.route('/product/<int:product_id>')
