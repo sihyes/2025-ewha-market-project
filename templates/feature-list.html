@@ -12,12 +12,16 @@
   <div class="product-grid" id="productContainer">
     {% for p in products %}
       <div class="product-card" data-id="{{loop.index}}">
-        <img src="{{ url_for('static', filename=p.image) }}" alt="{{ p.name }}">
+        {% if p.image.startswith('http://') or p.image.startswith('https://') %}
+          <img src="{{ p.image }}" alt="{{ p.name }}">
+        {% else %}
+          <img src="{{ url_for('static', filename=p.image) }}" alt="{{ p.name }}">
+        {% endif %}
         <p><strong>{{ p.name }}</strong></p>
         <p>₩{{ "{:,}".format(p.price) }}</p>
         <div class="product-buttons">
-            <a href="/product/{{ p.id if p.id else loop.index }}" class="detail-btn">상세 페이지</a>
-            <button class="like-btn" data-item-id="{{ p.id if p.id else loop.index }}">찜하기</button>
+            <a href="/product/{{ p.item_id }}" class="detail-btn">상세 페이지</a>
+            <button class="like-btn" data-item-id="{{ p.item_id }}">찜하기</button>
         </div>
       </div>
     {% endfor %}

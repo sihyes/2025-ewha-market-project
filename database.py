@@ -51,6 +51,46 @@ class DBhandler:
                     return item_info
         return None
 
+    # 상품 등록 (products 컬렉션에 저장)
+    def insert_product(self, seller_id, name, price, region, condition, description, image_path):
+        try:
+            # 고유 item_id 생성 (타임스탬프 기반)
+            import time
+            item_id = int(time.time() * 1000)  # 밀리초 단위 타임스탬프
+            
+            # 이미지 경로 처리
+            if image_path and (image_path.startswith('http://') or image_path.startswith('https://')):
+                # 외부 URL인 경우 그대로 사용
+                image = image_path
+            else:
+                # 로컬 파일 경로인 경우
+                if image_path:
+                    if not image_path.startswith('img/'):
+                        image = f'img/{image_path}'
+                    else:
+                        image = image_path
+                else:
+                    image = 'img/default.png'
+            
+            product_info = {
+                "item_id": item_id,
+                "name": name,
+                "price": int(price),
+                "region": region,
+                "condition": condition,
+                "description": description,
+                "image": image,
+                "seller_id": seller_id
+            }
+            
+            # Firebase의 products 컬렉션에 저장
+            self.db.child("products").push(product_info)
+            print(f"✅ Product added: {product_info}")
+            return True
+        except Exception as e:
+            print(f"❌ Error inserting product: {e}")
+            return False
+
     # ---------------- 회원 ----------------
     def insert_user(self, data, pw):
         user_info = {
