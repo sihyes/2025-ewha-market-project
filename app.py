@@ -3,6 +3,8 @@ from database import DBhandler
 import hashlib
 
 app = Flask(__name__)
+app.config['UPLOAD_FOLDER'] = 'static/uploads'  # 업로드 파일 저장 경로
+# os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
 # 업로드 폴더 설정
 app.config['UPLOAD_FOLDER'] = 'static/img'
@@ -18,14 +20,17 @@ products = [
     {'item_id': 107, 'name': '전공책(기본간호수기)', 'price': 5000, 'image': 'img/book.jpeg'},
 ]
 
+DB=DBhandler()
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "helloosp"
 
 DB = DBhandler()
+
 @app.route('/')
 def index():
     return render_template('home.html')
+
 
 @app.route('/feature-list')
 def feature_list():
@@ -49,18 +54,26 @@ def feature_list():
 
     return render_template('feature-list.html', products=products, wished_item_ids=wished_item_ids)
 
-
-@app.route('/review-list')
-def review_list():
-    return render_template('review-list.html')
-
 @app.route('/product-register')
 def product_register():
     return render_template('product-register.html')
 
-@app.route('/review-register')
+@app.route("/review-list")
+def review_list():
+    return render_template("review-list.html") 
+
+@app.route("/review-register")
 def review_register():
     return render_template('review-register.html')
+
+@app.route("/review-detail")
+def simple_review_detail():
+    """
+    모든 리뷰 카드가 연결될 하드코딩된 상세 페이지 엔드포인트입니다.
+    ID를 받지 않고, 단순히 템플릿만 렌더링합니다.
+    """
+    return render_template("detailed-review.html")
+
 #------회원가입
 @app.route("/signup")
 def signup():
