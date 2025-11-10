@@ -56,7 +56,7 @@ class DBhandler:
         try:
             # 고유 item_id 생성 (타임스탬프 기반)
             import time
-            item_id = int(time.time() * 1000)  # 밀리초 단위 타임스탬프
+            item_id = str(int(time.time() * 1000))  # 밀리초 단위 타임스탬프
             
             # 이미지 경로 처리
             if image_path and (image_path.startswith('http://') or image_path.startswith('https://')):
@@ -84,7 +84,7 @@ class DBhandler:
             }
             
             # Firebase의 products 컬렉션에 저장
-            self.db.child("products").push(product_info)
+            self.db.child("products").child(str(item_id)).set(product_info)
             print(f"✅ Product added: {product_info}")
             return True
         except Exception as e:
@@ -141,7 +141,7 @@ class DBhandler:
             return False
         else:
             # 상품 정보 확인 후 추가
-            product = self.db.child("products").child(str(item_id)).get()
+            product = self.db.child("products").order_by_child("item_id").equal_to(str(item_id)).get()
             if product.val():
                 p=product.val()
                 item_name = p.get("name", "이름 없음")

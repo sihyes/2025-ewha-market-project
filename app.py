@@ -2,10 +2,6 @@ from flask import Flask, render_template, request, flash, redirect, url_for, ses
 from database import DBhandler
 import hashlib
 
-app = Flask(__name__)
-app.config["SECRET_KEY"] = "helloosp"
-app.config['UPLOAD_FOLDER'] = 'static/img'
-
 # 샘플 상품 목록
 products = [
     {'item_id': 101, 'name': '롬앤 컬러 립글로스', 'price': 9900, 'image': 'img/romn_gloss.jpeg'},
@@ -21,6 +17,7 @@ DB=DBhandler()
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "helloosp"
+app.config['UPLOAD_FOLDER'] = 'static/img'
 
 DB = DBhandler()
 
@@ -72,10 +69,6 @@ def feature_list():
                            page=page,
                            page_count=page_count,
                            total=item_counts)
-
-@app.route('/review-list')
-def review_list():
-    return render_template('review-list.html')
 
 @app.route('/product-register', methods=['GET', 'POST'])
 def product_register():
@@ -226,6 +219,8 @@ def product_detail(product_id):
     
     # Firebase 데이터가 비어있지 않을 때만 리스트로 변환
     products = [p.val() for p in products_ref.each()] if products_ref and products_ref.each() else []
+
+    product = next((p for p in products if str(p.get('item_id')) == str(product_id)), None)
 
     # 이미지 경로 조정
     for p in products:
