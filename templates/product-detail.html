@@ -5,29 +5,27 @@
 
 <div class="product-detail">
 
-  <!-- 왼쪽: 상품 이미지 -->
   <div class="product-image">
-    <img src="{{ url_for('static', filename=product['image']) }}" alt="{{ product['name'] }}">
+    <img src="{{ url_for('static', filename=product.image) }}" alt="{{ product.name }}">
   </div>
 
-  <!-- 오른쪽: 상품 정보 -->
   <div class="product-info">
-    <h2>{{ product['name'] }}</h2>
-    <p><strong>가격:</strong> ₩{{ "{:,}".format(product['price']|int) }}</p>
+    <h2>{{ product.name }}</h2>
+    <p class="description-text">{{ product.description }}</p> 
+    <p><strong>가격:</strong> ₩{{ "{:,}".format(product.price) }}</p>
 
     <div class="product-buttons">
-      <a href="{{ url_for('purchase', product_id=product['item_id']) }}" class="btn buy-btn">
-        구매하기
-      </a>
-
+      <a href="{{ url_for('purchase', product_id=product.item_id) }}" class="btn buy-btn">구매하기</a>
       <a href="{{ url_for('review_list') }}" class="btn review-btn">리뷰 보러가기</a>
+      
+<button class="wishlist-btn wished" 
+        onclick="toggleWishlist('{{ product.item_id }}', this)">
+    <img src="{{ url_for('static', filename='img/heart-fill.svg') }}" alt="찜">
+</button>
 
-      <button class="wishlist-btn wished"
-              onclick="toggleWishlist('{{ product['item_id'] }}', this)">
-        <img src="{{ url_for('static', filename='img/heart-fill.svg') }}" alt="찜">
-      </button>
     </div>
   </div>
 
 </div>
+
 {% endblock %}
