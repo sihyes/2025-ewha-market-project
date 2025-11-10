@@ -176,24 +176,29 @@ def logout():
     flash("로그아웃 되었습니다.")
     return redirect(url_for('index'))
 
-@app.route('/product/<int:product_id>')
+@app.route('/product/<product_id>')
 def product_detail(product_id):
+    # Firebase에서 products 데이터 가져오기
     products_ref = DB.db.child("products").get()
-    products = [p.val() for p in products_ref.each()] if products_ref.each() else []
+    
+    # Firebase 데이터가 비어있지 않을 때만 리스트로 변환
+    products = [p.val() for p in products_ref.each()] if products_ref and products_ref.each() else []
 
-    # image 경로 조정
+    # 이미지 경로 조정
     for p in products:
         if p.get("image", "").startswith("/static/"):
+            # /static/ 중복 방지
             p["image"] = p["image"].replace("/static/", "")
 
-    # item_id 비교
-    product = next((p for p in products if str(p['item_id']) == str(product_id)), None)
+    #item_id로 해당 상품 찾기
+    product = next((p for p in products if str(p.get('item_id')) == str(product_id)), None)
     
+    #예외 처리
     if not product:
-        return "해당 상품을 찾을 수 없습니다.", 404
+        return render_template('error.html', message="해당 상품을 찾을 수 없습니다."), 404
 
+    #상품 상세 페이지 렌더링
     return render_template('product-detail.html', product=product)
-
 
 if __name__ == '__main__':
     app.run(debug=True)
