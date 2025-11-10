@@ -2,10 +2,6 @@ from flask import Flask, render_template, request, flash, redirect, url_for, ses
 from database import DBhandler
 import hashlib
 
-app = Flask(__name__)
-app.config["SECRET_KEY"] = "helloosp"
-app.config['UPLOAD_FOLDER'] = 'static/img'
-
 # 샘플 상품 목록
 products = [
     {'item_id': 101, 'name': '롬앤 컬러 립글로스', 'price': 9900, 'image': 'img/romn_gloss.jpeg'},
@@ -21,6 +17,7 @@ DB=DBhandler()
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "helloosp"
+app.config['UPLOAD_FOLDER'] = 'static/img'
 
 DB = DBhandler()
 
@@ -44,11 +41,22 @@ def index():
 
 @app.route('/feature-list')
 def feature_list():
-    # 1. DB에서 상품 가져오기
+     #1. 페이지네이션 파라미터
+    page = request.args.get("page", 0, type=int)
+    per_page = 10  # 한 페이지당 상품 10개
+    per_row = 5
+
+    # 2. DB에서 상품 가져오기
     products_ref = DB.db.child("products").get()
     products = [p.val() for p in products_ref.each()] if products_ref.each() else []
+    item_counts=len(products)
 
-    # 2. image 경로 조정 (optional)
+    # 3. 페이지별로 나누기 
+    start_idx = page * per_page
+    end_idx = start_idx + per_page
+    products = products[start_idx:end_idx]
+
+    # 4. image 경로 조정 (optional)
     for p in products:
         image = p.get("image", "")
         # 만약 DB에 '/static/img/파일명' 으로 저장되어 있으면 url_for용으로 변환
@@ -56,15 +64,24 @@ def feature_list():
             p["image"] = image.replace("/static/", "")
         # 외부 URL인 경우 그대로 사용 (템플릿에서 처리)
 
-    # 3. 찜 목록 가져오기
+    # 5. 찜 목록 가져오기
     if 'user' in session:
         user_id = session['user']
         wishlist_data = DB.db.child("wishlist").order_by_child("user_id").equal_to(user_id).get()
         wished_item_ids = [str(item.val().get("item_id")) for item in wishlist_data.each()] if wishlist_data.each() else []
     else:
         wished_item_ids = []
+    
+    # 6. 페이지 수 계산 
+    page_count = (item_counts + per_page - 1) // per_page
+    print("총 상품 개수:", item_counts, "페이지 수:", page_count)
 
-    return render_template('feature-list.html', products=products, wished_item_ids=wished_item_ids)
+    return render_template('feature-list.html', 
+                           products=products, 
+                           wished_item_ids=wished_item_ids,
+                           page=page,
+                           page_count=page_count,
+                           total=item_counts)
 
 @app.route('/product-register', methods=['GET', 'POST'])
 def product_register():
@@ -168,27 +185,27 @@ def wishlist():
         # .val()을 풀어서 리스트로 변환
     wishlist_items = []
     if wishlist_data.each():
+
         for item in wishlist_data.each():
             data = item.val()
             item_id = data.get("item_id")
 
             # 🔍 product DB에서 해당 상품 정보 가져오기
-            product_ref = DB.db.child("products").order_by_child("item_id").equal_to(str(item_id)).get()
-            if product_ref.each():
-                product_info = product_ref.each()[0].val()
-                wishlist_items.append({
-                    "item_id": product_info.get("item_id"),
-                    "item_name": product_info.get("name"),
-                    "item_price": product_info.get("price"),
-                    "item_img": product_info.get("image")
-                })
+            product_ref = DB.db.child("products").order_by_child("item_id").equal_to(str(item_id)).get() 
+            if product_ref.each(): 
+                product_info = product_ref.each()[0].val() 
+                wishlist_items.append({ 
+                    "item_id": product_info.get("item_id"), 
+                    "item_name": product_info.get("name"), 
+                    "item_price": product_info.get("price"), 
+                    "item_img": product_info.get("image") })
             else:
                 # 상품 DB에 없을 때 대비
                 wishlist_items.append({
                     "item_id": item_id,
                     "item_name": "알 수 없는 상품",
                     "item_price": "정보 없음",
-                    "item_img": url_for('static', filename='img/default.png')
+                    "item_img": url_for('static', filename='img/default.png').replace('/static','')
                 })
 
     return render_template("wishlist.html", items=wishlist_items)
@@ -208,22 +225,30 @@ def logout():
     session.clear() #예제코드에 맞추어 변경
     return redirect(url_for('index'))
 
-@app.route('/product/<int:product_id>')
+@app.route('/product/<product_id>')
 def product_detail(product_id):
+    # Firebase에서 products 데이터 가져오기
     products_ref = DB.db.child("products").get()
-    products = [p.val() for p in products_ref.each()] if products_ref.each() else []
+    
+    # Firebase 데이터가 비어있지 않을 때만 리스트로 변환
+    products = [p.val() for p in products_ref.each()] if products_ref and products_ref.each() else []
 
-    # image 경로 조정
+    product = next((p for p in products if str(p.get('item_id')) == str(product_id)), None)
+
+    # 이미지 경로 조정
     for p in products:
         if p.get("image", "").startswith("/static/"):
+            # /static/ 중복 방지
             p["image"] = p["image"].replace("/static/", "")
 
-    # item_id 비교
-    product = next((p for p in products if str(p['item_id']) == str(product_id)), None)
+    #item_id로 해당 상품 찾기
+    product = next((p for p in products if str(p.get('item_id')) == str(product_id)), None)
     
+    #예외 처리
     if not product:
-        return "해당 상품을 찾을 수 없습니다.", 404
+        return render_template('error.html', message="해당 상품을 찾을 수 없습니다."), 404
 
+    #상품 상세 페이지 렌더링
     return render_template('product-detail.html', product=product)
 
 @app.route('/purchase/<int:product_id>')
@@ -249,7 +274,6 @@ def purchase(product_id):
 
     # 이제 product 변수가 정의되었으므로 템플릿에 전달할 수 있습니다.
     return render_template('purchase.html', product=product)
-
 
 
 if __name__ == '__main__':
