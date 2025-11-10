@@ -141,13 +141,65 @@ def review_list():
 def review_register():
     return render_template('review-register.html')
 
+def get_latest_review_by_product_name(product_name):
+    """
+    상품 이름과 일치하는 리뷰를 찾고, 그 중 가장 최근(가장 큰 키/타임스탬프)의
+    리뷰 ID(Firebase 키)를 반환합니다.
+    (리뷰 DB 구조가 {review_id: {product_name: '상품이름', ...}} 라고 가정)
+    """
+    reviews_ref = DB.db.child("review").get() # 'review'는 리뷰가 저장된 DB 노드 이름이라고 가정
+    
+    if not reviews_ref.each():
+        return None
+
+    # 모든 리뷰를 리스트로 변환 (키와 값 모두 필요)
+    all_reviews = []
+    for review in reviews_ref.each():
+        review_data = review.val()
+        review_data['review_id'] = review.key() # Firebase 키를 리뷰 ID로 사용
+        all_reviews.append(review_data)
+
+    # 상품 이름이 일치하는 리뷰만 필터링
+    matching_reviews = [
+        r for r in all_reviews 
+        if r.get('product_name') == product_name
+    ]
+
+    if not matching_reviews:
+        return None
+
+  
+    latest_review = sorted(
+        matching_reviews, 
+        key=lambda r: r['review_id'], 
+        reverse=True
+    )[0]
+    
+    return latest_review['review_id']
+
+@app.route("/redirect-to-product-review/<product_name>")
+def redirect_to_latest_review(product_name):
+    product_name_decoded = unquote(product_name) # URL 인코딩된 상품명 디코딩
+    
+    latest_review_id = get_latest_review_by_product_name(product_name_decoded)
+
+    if latest_review_id:
+     
+        return redirect(url_for('review_detail', review_id=latest_review_id))
+    else:
+        # 리뷰가 없다면 전체 리뷰 목록 페이지로 이동
+        flash(f"상품 '{product_name_decoded}'에 대한 리뷰를 찾을 수 없습니다.")
+        return redirect(url_for('review_list'))
+
 @app.route("/review-detail")
-def simple_review_detail():
-    """
-    모든 리뷰 카드가 연결될 하드코딩된 상세 페이지 엔드포인트입니다.
-    ID를 받지 않고, 단순히 템플릿만 렌더링합니다.
-    """
-    return render_template("detailed-review.html")
+def review_detail(): # 함수 이름 변경 (기존 simple_review_detail에서 변경)
+    review_id = request.args.get("review_id")
+    if review_id:
+      
+        return render_template("detailed-review.html", review_id=review_id)
+    else:
+        # ID가 없으면 리뷰 목록으로 리디렉션하거나 에러 처리
+        return redirect(url_for('review_list'))
 
 #------회원가입
 @app.route("/signup")
