@@ -165,18 +165,20 @@ class DBhandler:
             return True    
         
    # ---------------- 상품 상세 조회 ----------------
-    def get_item_byname(self, name):
+    def get_item_byid(self, item_id):
         """
-        상품 이름(name)으로 item 테이블에서 해당 상품 정보를 가져옴
+        상품 ID(item_id)로 products 테이블에서 해당 상품 정보를 가져옴
         """
-        items = self.db.child("item").get()
+        products = self.db.child("products").get()
         target_value = None
 
-        if items.each():
-            for res in items.each():
-                key_value = res.key()  # Firebase에서 각 상품의 이름 (insert_item에서 child(name)으로 넣었음)
-                if key_value == name:
-                    target_value = res.val()
+        if products.each():
+            for res in products.each():
+                data = res.val()  # 각 상품의 실제 데이터 (딕셔너리 형태)
+                # Firebase에 저장된 'item_id' 필드와 비교
+                if str(data.get("item_id")) == str(item_id):
+                    target_value = data
                     break
 
         return target_value
+

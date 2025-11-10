@@ -7,7 +7,12 @@
 
   <!-- 왼쪽: 상품 이미지 -->
   <div class="product-image">
+  {% if product.image.startswith('http://') or product.image.startswith('https://') %}
+    <img src="{{ product.image }}" alt="{{ product.name }}">
+  {% else %}
     <img src="{{ url_for('static', filename=product.image) }}" alt="{{ product.name }}">
+  {% endif %}
+
   </div>
 
   <!-- 오른쪽: 상품 정보 -->
