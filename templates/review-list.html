@@ -1,32 +1,36 @@
 {% extends "index.html" %}
-
 {% block content %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/review.css') }}">
-<div class="review-header-top">
- <h1>리뷰 전체 보기</h1>
- <p class="review-count">현재까지 <span id="review-count">0개</span> 리뷰 등록됨</p>
-</div>
-
-<section class="review-grid" id="review-list-container">
-</section>
-
-<script src="{{ url_for('static', filename='js/review-list.js') }}"></script>
-<script>
-    const DETAIL_URL_PATTERN = "{{ url_for('review_detail') }}"; 
-</script>
-
 
 {% if product_name_no_review %}
 <script>
-    // 페이지가 로드되자마자 즉시 실행
-    (function() {
-        // |e 필터는 상품 이름에 따옴표(') 등이 있을 경우를 대비해
-        // JavaScript 문자열을 안전하게 만듭니다.
-        var productName = '{{ product_name_no_review | e }}';
-        
-        // 팝업창을 띄웁니다.
-        alert("상품 '" + productName + "'에 대한 리뷰가 존재하지 않습니다.\n전체 리뷰 목록으로 이동합니다.");
-    })();
+    alert("상품 '{{ product_name_no_review }}'에 대한 리뷰가 존재하지 않습니다.\n전체 리뷰 목록으로 이동합니다.");
 </script>
 {% endif %}
-{% endblock content %}
+
+<h1>리뷰 전체 보기 <span style="font-size: 16px; font-weight: normal; color: #6c757d;">
+        현재까지 {{ reviews | length }}개 리뷰 등록됨
+    </span></h1>
+
+<div class="review-grid">
+    {% if reviews %}
+    {% for r in reviews %}
+    <div class="review-card">
+        <a href="{{ url_for('review_detail', title=r.title) }}" class="review-link">
+            <img src="{{ url_for('static', filename=r.image) }}" alt="{{ r.title }}" class="review-card-img">
+            <div class="review-card-info">
+                <h4>제목: {{ r.title }}</h4>
+                <p class="review-rating">평점:
+                    {% set rating_int = r.rating | int %}
+                    {% for i in range(5) %}
+                    {% if i < rating_int %}★{% else %}☆{% endif %} {% endfor %} </p>
+            </div>
+        </a>
+    </div>
+    {% endfor %}
+    {% else %}
+    <p>등록된 리뷰가 없습니다.</p>
+    {% endif %}
+</div>
+
+{% endblock %}
