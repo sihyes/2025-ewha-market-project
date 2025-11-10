@@ -65,7 +65,7 @@ class DBhandler:
             # 🔹 item_id를 이용해 상품 정보 가져오기
             product = self.db.child("products").child(str(item_id)).get()
             if product.val():
-                p = product.val()
+                p=product.val()
                 item_name = p.get("name", "이름 없음")
                 item_price = p.get("price", 0)
                 item_img = p.get("image", "/static/img/default.png")
