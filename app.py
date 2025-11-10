@@ -1,6 +1,8 @@
 from flask import Flask, render_template, request, flash, redirect, url_for, session, jsonify
 from database import DBhandler
 import hashlib
+from urllib.parse import unquote
+
 
 # 샘플 상품 목록
 products = [
@@ -48,8 +50,22 @@ def feature_list():
 
     # 2. DB에서 상품 가져오기
     products_ref = DB.db.child("products").get()
-    products = [p.val() for p in products_ref.each()] if products_ref.each() else []
-    item_counts=len(products)
+    products = []
+    if products_ref.each():
+        for p in products_ref.each():
+            data = p.val()
+            products.append({
+                "item_id": data.get("item_id"),
+                "name": data.get("name"),
+                "price": data.get("price"),
+                "region": data.get("region"),
+                "condition": data.get("condition"),
+                "description": data.get("description"),
+                "image": data.get("image"),  # <- DB image 그대로 사용
+                "seller_id": data.get("seller_id")
+            })
+
+    item_counts = len(products)
 
     # 3. 페이지별로 나누기 
     start_idx = page * per_page
@@ -227,28 +243,9 @@ def logout():
 
 @app.route('/product/<product_id>')
 def product_detail(product_id):
-    # Firebase에서 products 데이터 가져오기
-    products_ref = DB.db.child("products").get()
-    
-    # Firebase 데이터가 비어있지 않을 때만 리스트로 변환
-    products = [p.val() for p in products_ref.each()] if products_ref and products_ref.each() else []
-
-    product = next((p for p in products if str(p.get('item_id')) == str(product_id)), None)
-
-    # 이미지 경로 조정
-    for p in products:
-        if p.get("image", "").startswith("/static/"):
-            # /static/ 중복 방지
-            p["image"] = p["image"].replace("/static/", "")
-
-    #item_id로 해당 상품 찾기
-    product = next((p for p in products if str(p.get('item_id')) == str(product_id)), None)
-    
-    #예외 처리
+    product = DB.get_item_byid(product_id)
     if not product:
-        return render_template('error.html', message="해당 상품을 찾을 수 없습니다."), 404
-
-    #상품 상세 페이지 렌더링
+        return "해당 상품을 찾을 수 없습니다.", 404
     return render_template('product-detail.html', product=product)
 
 @app.route('/purchase/<int:product_id>')
@@ -274,7 +271,6 @@ def purchase(product_id):
 
     # 이제 product 변수가 정의되었으므로 템플릿에 전달할 수 있습니다.
     return render_template('purchase.html', product=product)
-
 
 if __name__ == '__main__':
     app.run(debug=True)
