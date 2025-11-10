@@ -122,16 +122,15 @@ def check_duplicate():
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
-        user_id = request.form['id']
+        id_ = request.form['id']  # user_id 대신 id_를 사용해도 되지만 일관성을 위해 id_ 유지
         pw = request.form['pw']
         pw_hash = hashlib.sha256(pw.encode('utf-8')).hexdigest()
 
-        users = DB.db.child("user").get()
-        for u in users.each():
-            value = u.val()
-            if value['id'] == user_id and value['pw'] == pw_hash:
-                session['user'] = user_id   # 로그인 성공하면 세션에 저장
-                return redirect(url_for('index'))   # 로그인 후 원래 화면으로
+        # DBhandler의 find_user 함수를 사용하는 main 브랜치 로직 채택
+        if DB.find_user(id_, pw_hash):
+            session['user'] = id_  # 로그인 성공하면 세션에 저장
+            return redirect(url_for('index'))  # 로그인 후 원래 화면으로
+        
         flash("ID 또는 비밀번호가 잘못되었습니다.")
         return redirect(url_for('login'))
     else:
