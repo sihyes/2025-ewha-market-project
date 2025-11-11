@@ -1,7 +1,7 @@
 {% extends "index.html" %}
-
 {% block content %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/review.css') }}">
+<<<<<<< HEAD
 <div class="review-header-top">
  <h1>리뷰 전체 보기</h1>
  <p class="review-count">현재까지 <span id="review-count">0개</span> 리뷰 등록됨</p>
@@ -30,3 +30,38 @@
 </script>
 {% endif %}
 {% endblock content %}
+=======
+
+{% if product_name_no_review %}
+<script>
+    alert("상품 '{{ product_name_no_review }}'에 대한 리뷰가 존재하지 않습니다.\n전체 리뷰 목록으로 이동합니다.");
+</script>
+{% endif %}
+
+<h1>리뷰 전체 보기 <span style="font-size: 16px; font-weight: normal; color: #6c757d;">
+        현재까지 {{ reviews | length }}개 리뷰 등록됨
+    </span></h1>
+
+<div class="review-grid">
+    {% if reviews %}
+    {% for r in reviews %}
+    <div class="review-card">
+        <a href="{{ url_for('review_detail', title=r.title) }}" class="review-link">
+            <img src="{{ url_for('static', filename=r.image) }}" alt="{{ r.title }}" class="review-card-img">
+            <div class="review-card-info">
+                <h4>제목: {{ r.title }}</h4>
+                <p class="review-rating">평점:
+                    {% set rating_int = r.rating | int %}
+                    {% for i in range(5) %}
+                    {% if i < rating_int %}★{% else %}☆{% endif %} {% endfor %} </p>
+            </div>
+        </a>
+    </div>
+    {% endfor %}
+    {% else %}
+    <p>등록된 리뷰가 없습니다.</p>
+    {% endif %}
+</div>
+
+{% endblock %}
+>>>>>>> origin/D/feature-review

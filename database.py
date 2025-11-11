@@ -162,6 +162,41 @@ class DBhandler:
                 "item_img": item_img,
                 "user_id_item_id": key_combo
             })
+
+            return True
+        
+     # ---------------- 리뷰 ----------------
+    def add_review(self, review_data):
+        try:
+            self.db.child("review").push(review_data)
+            print("✅ 리뷰 저장 완료:", review_data)
+            return True
+        except Exception as e:
+            print(f"❌ 리뷰 저장 실패: {e}")
+            return False
+
+    def get_all_reviews(self):
+        """모든 리뷰 가져오기"""
+        try:
+            reviews = self.db.child("review").get().val()
+            if not reviews:
+                return []
+            return [r for r in reviews.values()]
+        except Exception as e:
+            print(f"❌ 리뷰 조회 실패: {e}")
+            return []
+
+    def get_review_by_title(self, title):
+        """특정 제목의 리뷰 가져오기 (상세 페이지용)"""
+        try:
+            all_reviews = self.get_all_reviews()
+            for r in all_reviews:
+                if r.get("title") == title:
+                    return r
+            return None
+        except Exception as e:
+            print(f"❌ 리뷰 상세 조회 실패: {e}")
+            return None
             return True    
         
    # ---------------- 상품 상세 조회 ----------------
@@ -182,3 +217,16 @@ class DBhandler:
 
         return target_value
 
+    def get_review_by_id(self, review_id):
+        """특정 ID(키)의 리뷰 상세 정보를 가져오기"""
+        try:
+            # review_id는 Firebase의 자동 생성된 key이므로 child(review_id)로 바로 접근
+            review_data = self.db.child("review").child(review_id).get().val()
+            if review_data:
+                # review_data 딕셔너리에 review_id도 포함하여 반환
+                review_data['review_id'] = review_id
+                return review_data
+            return None
+        except Exception as e:
+            print(f"❌ 리뷰 ID 조회 실패: {e}")
+            return None
