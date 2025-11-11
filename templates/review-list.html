@@ -16,7 +16,7 @@
     {% if reviews %}
     {% for r in reviews %}
     <div class="review-card">
-        <a href="{{ url_for('review_detail', title=r.title) }}" class="review-link">
+        <a href="{{ url_for('review_detail_by_title', title=r.title) }}" class="review-link">
             <img src="{{ url_for('static', filename=r.image) }}" alt="{{ r.title }}" class="review-card-img">
             <div class="review-card-info">
                 <h4>제목: {{ r.title }}</h4>
