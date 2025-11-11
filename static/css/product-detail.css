@@ -25,14 +25,43 @@
   margin-bottom: 10px;
 }
 
-/* 상품 설명 텍스트를 위한 스타일 */
-.description-text { 
-  font-size: 16px; 
-  color: #555; 
-  margin: -10px 0 10px 0 !important; /* 위쪽 여백 조정 */
+/* [신규] 1. 정보 + 설명 전체를 감싸는 영역 */
+.product-description-area {
+  margin: -10px 0 10px 0; /* 기존 여백 유지 */
 }
 
+/* [신규] 2. 상태, 판매자, 주소 (작은 글씨) */
+.product-meta {
+  font-size: 14px; /* 글씨 크기 작게 */
+  color: #555; /* 약간 연한 회색 */
+  line-height: 1.5;
+  margin-bottom: 20px; /* 아래 설명과의 간격 */
+}
+
+.product-meta p {
+  margin: 4px 0; /* 정보 항목 간의 간격 */
+}
+
+.product-meta strong {
+  color: #555; /* [수정] 값과 동일한 연한 회색 */
+  font-weight: normal; /* [수정] 굵은 글씨 제거 */
+  margin-right: 5px; /* '상태:' 와 '새상품' 사이 간격 (유지) */
+}
+
+/* [신규] 3. 상품 본문 설명 (조금 크고 검은색) */
+.product-main-description {
+  font-size: 17px; /* 기존(16px)보다 조금 크게 */
+  color: #000; /* 검은색 */
+  line-height: 1.6;
+  margin: 0; /* <p> 태그의 기본 마진 제거 */
+}
+
+
 .product-info p {
+  /* 참고: 이 스타일은 '가격' 표시에 적용됩니다. 
+     (위 .product-meta p 와 .product-main-description 이 
+     설명 영역의 p 태그 스타일을 대체했습니다.)
+  */
   font-size: 18px;
   margin: 5px 0;
 }
@@ -55,7 +84,6 @@
   transition: background 0.2s ease;
   border: none;
   cursor: pointer;
-
 }
 
 /* 구매하기 버튼 색상 */
@@ -76,13 +104,12 @@
 
 /* 찜 버튼 (아이콘 형태) */
 .wishlist-btn {
-  /* .btn 요소들과 높이를 맞추기 위해 상하 패딩을 넉넉하게 주고 투명 배경 설정 */
   border: none;
-  background: none; 
+  background: none;
   cursor: pointer;
-  padding: 8px 5px; /* 상하 패딩을 다른 버튼과 비슷하게 조정 */
+  padding: 8px 5px;
   display: flex;
-  align-items: center; /* 아이콘을 세로 중앙 정렬 */
+  align-items: center;
 }
 .wishlist-btn img {
   width: 25px;
@@ -92,7 +119,6 @@
 .wishlist-btn:hover img {
   transform: scale(1.1);
 }
-
 
 .cart-btn {
   background-color: #0b593f;
