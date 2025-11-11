@@ -9,7 +9,7 @@
 .product-image img {
   width: 400px;
   border-radius: 12px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 .product-info {
@@ -25,30 +25,68 @@
   margin-bottom: 10px;
 }
 
+/* [신규] 1. 정보 + 설명 전체를 감싸는 영역 */
+.product-description-area {
+  margin: -10px 0 10px 0; /* 기존 여백 유지 */
+}
+
+/* [신규] 2. 상태, 판매자, 주소 (작은 글씨) */
+.product-meta {
+  font-size: 14px; /* 글씨 크기 작게 */
+  color: #555; /* 약간 연한 회색 */
+  line-height: 1.5;
+  margin-bottom: 20px; /* 아래 설명과의 간격 */
+}
+
+.product-meta p {
+  margin: 4px 0; /* 정보 항목 간의 간격 */
+}
+
+.product-meta strong {
+  color: #555; /* [수정] 값과 동일한 연한 회색 */
+  font-weight: normal; /* [수정] 굵은 글씨 제거 */
+  margin-right: 5px; /* '상태:' 와 '새상품' 사이 간격 (유지) */
+}
+
+/* [신규] 3. 상품 본문 설명 (조금 크고 검은색) */
+.product-main-description {
+  font-size: 17px; /* 기존(16px)보다 조금 크게 */
+  color: #000; /* 검은색 */
+  line-height: 1.6;
+  margin: 0; /* <p> 태그의 기본 마진 제거 */
+}
+
+
 .product-info p {
+  /* 참고: 이 스타일은 '가격' 표시에 적용됩니다. 
+     (위 .product-meta p 와 .product-main-description 이 
+     설명 영역의 p 태그 스타일을 대체했습니다.)
+  */
   font-size: 18px;
   margin: 5px 0;
 }
 
-/* ✅ 버튼들 가로로 나열 */
+/* 버튼들 가로로 나열 */
 .product-buttons {
   display: flex;
   align-items: center;
   gap: 10px;
 }
 
-/* ✅ 공통 버튼 스타일 */
+/* 공통 버튼 스타일 */
 .btn {
   display: inline-block;
-  padding: 10px 20px;
+  padding: 8px 16px;
   border-radius: 8px;
   text-decoration: none;
   color: white;
   font-weight: bold;
   transition: background 0.2s ease;
+  border: none;
+  cursor: pointer;
 }
 
-/* ✅ 각각 다른 색상 */
+/* 구매하기 버튼 색상 */
 .buy-btn {
   background-color: #007bff;
 }
@@ -56,6 +94,7 @@
   background-color: #0056b3;
 }
 
+/* 리뷰 보러가기 버튼 색상 */
 .review-btn {
   background-color: #28a745;
 }
@@ -63,12 +102,14 @@
   background-color: #1e7e34;
 }
 
-/* 찜 버튼 */
+/* 찜 버튼 (아이콘 형태) */
 .wishlist-btn {
   border: none;
   background: none;
   cursor: pointer;
-  padding: 5px;
+  padding: 8px 5px;
+  display: flex;
+  align-items: center;
 }
 .wishlist-btn img {
   width: 25px;
@@ -77,4 +118,12 @@
 }
 .wishlist-btn:hover img {
   transform: scale(1.1);
+}
+
+.cart-btn {
+  background-color: #0b593f;
+  border: none;
+  border-radius: 8px;
+  padding: 8px;
+  cursor: pointer;
 }

@@ -51,6 +51,46 @@ class DBhandler:
                     return item_info
         return None
 
+    # 상품 등록 (products 컬렉션에 저장)
+    def insert_product(self, seller_id, name, price, region, condition, description, image_path):
+        try:
+            # 고유 item_id 생성 (타임스탬프 기반)
+            import time
+            item_id = str(int(time.time() * 1000))  # 밀리초 단위 타임스탬프
+            
+            # 이미지 경로 처리
+            if image_path and (image_path.startswith('http://') or image_path.startswith('https://')):
+                # 외부 URL인 경우 그대로 사용
+                image = image_path
+            else:
+                # 로컬 파일 경로인 경우
+                if image_path:
+                    if not image_path.startswith('img/'):
+                        image = f'img/{image_path}'
+                    else:
+                        image = image_path
+                else:
+                    image = 'img/default.png'
+            
+            product_info = {
+                "item_id": item_id,
+                "name": name,
+                "price": int(price),
+                "region": region,
+                "condition": condition,
+                "description": description,
+                "image": image,
+                "seller_id": seller_id
+            }
+            
+            # Firebase의 products 컬렉션에 저장
+            self.db.child("products").child(str(item_id)).set(product_info)
+            print(f"✅ Product added: {product_info}")
+            return True
+        except Exception as e:
+            print(f"❌ Error inserting product: {e}")
+            return False
+
     # ---------------- 회원 ----------------
     def insert_user(self, data, pw):
         user_info = {
@@ -76,6 +116,15 @@ class DBhandler:
                 if res.val().get('id') == id_string:
                     return False
             return True
+        
+    def find_user(self, id_, pw_):
+        users = self.db.child("user").get()
+        target_value=[]
+        for res in users.each():
+            value = res.val()
+            if value['id'] == id_ and value['pw'] == pw_:
+                return True
+        return False
 
     # ---------------- 찜(Wishlist) ----------------
     def get_wishlist(self, user_id):
@@ -92,9 +141,9 @@ class DBhandler:
             return False
         else:
             # 상품 정보 확인 후 추가
-            product = self.db.child("products").child(str(item_id)).get()
+            product = self.db.child("products").order_by_child("item_id").equal_to(str(item_id)).get()
             if product.val():
-                p = product.val()
+                p=product.val()
                 item_name = p.get("name", "이름 없음")
                 item_price = p.get("price", 0)
                 item_img = p.get("image", "/static/img/default.png")
@@ -147,3 +196,36 @@ class DBhandler:
         except Exception as e:
             print(f"❌ 리뷰 상세 조회 실패: {e}")
             return None
+            return True    
+        
+   # ---------------- 상품 상세 조회 ----------------
+    def get_item_byid(self, item_id):
+        """
+        상품 ID(item_id)로 products 테이블에서 해당 상품 정보를 가져옴
+        """
+        products = self.db.child("products").get()
+        target_value = None
+
+        if products.each():
+            for res in products.each():
+                data = res.val()  # 각 상품의 실제 데이터 (딕셔너리 형태)
+                # Firebase에 저장된 'item_id' 필드와 비교
+                if str(data.get("item_id")) == str(item_id):
+                    target_value = data
+                    break
+
+        return target_value
+    def get_review_by_id(self, review_id):
+        """특정 ID(키)의 리뷰 상세 정보를 가져오기"""
+        try:
+            # review_id는 Firebase의 자동 생성된 key이므로 child(review_id)로 바로 접근
+            review_data = self.db.child("review").child(review_id).get().val()
+            if review_data:
+                # review_data 딕셔너리에 review_id도 포함하여 반환
+                review_data['review_id'] = review_id
+                return review_data
+            return None
+        except Exception as e:
+            print(f"❌ 리뷰 ID 조회 실패: {e}")
+            return None
+

@@ -6,24 +6,42 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/feature-list.css') }}">
 
   <h4 id="totalCount">
-    전체 상품 조회 결과: <span class="count-number">{{ products|length }}</span>개
+    전체 상품 조회 결과: <span class="count-number">{{ total }}</span>개
   </h4>
 
   <div class="product-grid" id="productContainer">
     {% for p in products %}
       <div class="product-card" data-id="{{loop.index}}">
-        <img src="{{ url_for('static', filename=p.image) }}" alt="{{ p.name }}">
+        {% if p.image.startswith('http://') or p.image.startswith('https://') %}
+          <img src="{{ p.image }}" alt="{{ p.name }}">
+        {% else %}
+          <img src="{{ url_for('static', filename=p.image) }}" alt="{{ p.name }}">
+        {% endif %}
         <p><strong>{{ p.name }}</strong></p>
         <p>₩{{ "{:,}".format(p.price) }}</p>
         <div class="product-buttons">
-            <a href="/product/{{ p.id if p.id else loop.index }}" class="detail-btn">상세 페이지</a>
-            <button class="like-btn" data-item-id="{{ p.id if p.id else loop.index }}">찜하기</button>
+            <a href="{{ url_for('product_detail', product_id=p.item_id) }}" class="detail-btn">상세 페이지</a>
+            <button class="like-btn" data-item-id="{{ p.item_id }}">찜하기</button>
         </div>
       </div>
     {% endfor %}
   </div>
 
- 
+<div class="page-wrap">
+  <div class="page-nation">
+    <ul>
+      {% for i in range(page_count) %}
+        <li>
+          <a href="{{ url_for('feature_list', page=i) }}"
+             class="{% if i == page %}active{% endif %}">
+             {{ i + 1 }}
+          </a>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+</div>
+
   <script>
   const wishedItems = JSON.parse('{{ wished_item_ids | tojson | safe }}');
   </script>
