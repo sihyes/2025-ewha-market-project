@@ -33,4 +33,21 @@
     {% endif %}
 </div>
 
+<div class="pagination">
+    {% if page > 0 %}
+    <a href="{{ url_for('review_list', page=page-1) }}" class="page-link">&laquo; 이전</a>
+    {% endif %}
+
+    {% for p in range(page_count) %}
+    {% if p == page %}
+    <span class="page-current">{{ p + 1 }}</span>
+    {% else %}
+    <a href="{{ url_for('review_list', page=p) }}" class="page-link">{{ p + 1 }}</a>
+    {% endif %}
+    {% endfor %}
+
+    {% if page < page_count - 1 %} <a href="{{ url_for('review_list', page=page+1) }}" class="page-link">다음 &raquo;</a>
+        {% endif %}
+</div>
+
 {% endblock %}

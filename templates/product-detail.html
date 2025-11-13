@@ -3,46 +3,48 @@
 {% block content %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/product-detail.css') }}">
 <div class="product-detail">
-  <div class="product-image">
+    <div class="product-image">
 
-    <img src="{{ url_for('static', filename=product.image) }}" alt="{{ product.name }}">
+        <img src="{{ url_for('static', filename=product.image) }}" alt="{{ product.name }}">
 
-  </div>
-<div class="product-info">
-    <h2>{{ product.name }}</h2>
+    </div>
+    <div class="product-info">
+        <h2>{{ product.name }}</h2>
 
-    <div class="product-description-area">
-        
-        <div class="product-meta">
-            <p><strong>상태:</strong> 
-                {% if product.condition == 'new' %}
+        <div class="product-description-area">
+
+            <div class="product-meta">
+                <p><strong>상태:</strong>
+                    {% if product.condition == 'new' %}
                     새상품
-                {% elif product.condition == 'used' %}
+                    {% elif product.condition == 'used' %}
                     중고
-                {% else %}
+                    {% else %}
                     {{ product.condition }} {% endif %}
+                </p>
+                <p><strong>판매자 아이디:</strong> {{ product.seller_id }}</p>
+                <p><strong>주소:</strong> {{ product.region }}</p>
+            </div>
+
+            <p class="product-main-description">
+                {{ product.description }}
             </p>
-            <p><strong>판매자 아이디:</strong> {{ product.seller_id }}</p>
-            <p><strong>주소:</strong> {{ product.region }}</p>
         </div>
-        
-        <p class="product-main-description">
-            {{ product.description }}
-        </p>
+        <p><strong>가격:</strong> ₩{{ "{:,}".format(product.price) }}</p>
+        <div class="product-buttons">
+            <a href="{{ url_for('purchase', product_id=product.item_id) }}" class="btn buy-btn">구매하기</a>
+            <a href="{{ url_for('view_review_detail', product_name=product.name|urlencode) }}" class="btn review-btn">리뷰
+                보러가기</a>
+            <a href="{{ url_for('review_register', product_name=product.name|urlencode) }}"
+                class="btn register-review-btn">리뷰 등록하기</a>
+
+            <button class="wishlist-btn wished" onclick="toggleWishlist('{{ product.item_id }}', this)">
+                <img src="{{ url_for('static', filename='img/heart-fill.svg') }}" alt="찜">
+
+            </button>
+        </div>
+
     </div>
-    <p><strong>가격:</strong> ₩{{ "{:,}".format(product.price) }}</p>
-    <div class="product-buttons">
-      <a href="{{ url_for('purchase', product_id=product.item_id) }}" class="btn buy-btn">구매하기</a>
-      <a href="{{ url_for('redirect_to_latest_review', product_name=product.name|urlencode) }}" class="btn review-btn">리뷰 보러가기</a>
-
-<button class="wishlist-btn wished"
-        onclick="toggleWishlist('{{ product.item_id }}', this)">
-    <img src="{{ url_for('static', filename='img/heart-fill.svg') }}" alt="찜">
-
-</button>
-    </div>
-
-  </div>
 </div>
 
 {% endblock %}

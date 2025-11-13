@@ -151,7 +151,8 @@ main {
 
 .review-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    grid-template-columns: repeat(3, 1fr);
+    /* 3칸 고정 */
     gap: 30px;
     padding-top: 20px;
 }
@@ -396,4 +397,37 @@ main {
 .review-detail a.btn {
     text-decoration: none;
     color: white;/
+}
+
+.pagination {
+    text-align: center;
+    margin-top: 40px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+.page-link,
+.page-current {
+    display: block;
+    padding: 8px 15px;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    text-decoration: none;
+    color: #0b593f;
+    font-weight: 600;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.page-link:hover {
+    background-color: #f0f0f0;
+}
+
+.page-current {
+    background-color: #0b593f;
+    color: white;
+    border-color: #0b593f;
+    cursor: default;
 }

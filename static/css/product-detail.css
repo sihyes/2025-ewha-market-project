@@ -27,33 +27,44 @@
 
 /* [신규] 1. 정보 + 설명 전체를 감싸는 영역 */
 .product-description-area {
-  margin: -10px 0 10px 0; /* 기존 여백 유지 */
+  margin: -10px 0 10px 0;
+  /* 기존 여백 유지 */
 }
 
 /* [신규] 2. 상태, 판매자, 주소 (작은 글씨) */
 .product-meta {
-  font-size: 14px; /* 글씨 크기 작게 */
-  color: #555; /* 약간 연한 회색 */
+  font-size: 14px;
+  /* 글씨 크기 작게 */
+  color: #555;
+  /* 약간 연한 회색 */
   line-height: 1.5;
-  margin-bottom: 20px; /* 아래 설명과의 간격 */
+  margin-bottom: 20px;
+  /* 아래 설명과의 간격 */
 }
 
 .product-meta p {
-  margin: 4px 0; /* 정보 항목 간의 간격 */
+  margin: 4px 0;
+  /* 정보 항목 간의 간격 */
 }
 
 .product-meta strong {
-  color: #555; /* [수정] 값과 동일한 연한 회색 */
-  font-weight: normal; /* [수정] 굵은 글씨 제거 */
-  margin-right: 5px; /* '상태:' 와 '새상품' 사이 간격 (유지) */
+  color: #555;
+  /* [수정] 값과 동일한 연한 회색 */
+  font-weight: normal;
+  /* [수정] 굵은 글씨 제거 */
+  margin-right: 5px;
+  /* '상태:' 와 '새상품' 사이 간격 (유지) */
 }
 
 /* [신규] 3. 상품 본문 설명 (조금 크고 검은색) */
 .product-main-description {
-  font-size: 17px; /* 기존(16px)보다 조금 크게 */
-  color: #000; /* 검은색 */
+  font-size: 17px;
+  /* 기존(16px)보다 조금 크게 */
+  color: #000;
+  /* 검은색 */
   line-height: 1.6;
-  margin: 0; /* <p> 태그의 기본 마진 제거 */
+  margin: 0;
+  /* <p> 태그의 기본 마진 제거 */
 }
 
 
@@ -90,6 +101,7 @@
 .buy-btn {
   background-color: #007bff;
 }
+
 .buy-btn:hover {
   background-color: #0056b3;
 }
@@ -98,6 +110,7 @@
 .review-btn {
   background-color: #28a745;
 }
+
 .review-btn:hover {
   background-color: #1e7e34;
 }
@@ -111,11 +124,13 @@
   display: flex;
   align-items: center;
 }
+
 .wishlist-btn img {
   width: 25px;
   vertical-align: middle;
   transition: transform 0.2s ease;
 }
+
 .wishlist-btn:hover img {
   transform: scale(1.1);
 }
@@ -126,4 +141,13 @@
   border-radius: 8px;
   padding: 8px;
   cursor: pointer;
+}
+
+.register-review-btn {
+  background-color: #ffc107;
+  color: #000;
+}
+
+.register-review-btn:hover {
+  background-color: #e0a800;
 }
