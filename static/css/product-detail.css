@@ -127,3 +127,13 @@
   padding: 8px;
   cursor: pointer;
 }
+
+/*찜하기-교수님코드*/
+#heart {
+  color: grey;
+  font-size: 50px;
+}
+
+#heart.red {
+  color: red;
+}

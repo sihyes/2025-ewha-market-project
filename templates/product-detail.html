@@ -1,43 +1,97 @@
-{% extends "index.html" %}
-{% block title %}상품 상세 페이지{% endblock %}
-{% block content %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/product-detail.css') }}">
+{% extends "index.html" %} {% block title %}상품 상세 페이지{% endblock %} {%
+block content %}
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/product-detail.css') }}"
+/>
 <div class="product-detail">
   <div class="product-image">
-
-    <img src="{{ url_for('static', filename=product.image) }}" alt="{{ product.name }}">
-
+    <img
+      src="{{ url_for('static', filename=product.image) }}"
+      alt="{{ product.name }}"
+    />
   </div>
-<div class="product-info">
+  <div class="product-info">
     <h2>{{ product.name }}</h2>
 
     <div class="product-description-area">
-        
-        <div class="product-meta">
-            <p><strong>상태:</strong> 
-                {% if product.condition == 'new' %}
-                    새상품
-                {% elif product.condition == 'used' %}
-                    중고
-                {% else %}
-                    {{ product.condition }} {% endif %}
-            </p>
-            <p><strong>판매자 아이디:</strong> {{ product.seller_id }}</p>
-            <p><strong>주소:</strong> {{ product.region }}</p>
-        </div>
-        
-        <p class="product-main-description">
-            {{ product.description }}
+      <div class="product-meta">
+        <p>
+          <strong>상태:</strong>
+          {% if product.condition == 'new' %} 새상품 {% elif product.condition
+          == 'used' %} 중고 {% else %} {{ product.condition }} {% endif %}
         </p>
+        <p><strong>판매자 아이디:</strong> {{ product.seller_id }}</p>
+        <p><strong>주소:</strong> {{ product.region }}</p>
+      </div>
+
+      <p class="product-main-description">{{ product.description }}</p>
     </div>
     <p><strong>가격:</strong> ₩{{ "{:,}".format(product.price) }}</p>
     <div class="product-buttons">
-      <a href="{{ url_for('purchase', product_id=product.item_id) }}" class="btn buy-btn">구매하기</a>
-      <a href="{{ url_for('redirect_to_latest_review', product_name=product.name|urlencode) }}" class="btn review-btn">리뷰 보러가기</a>
-
+      <a
+        href="{{ url_for('purchase', product_id=product.item_id) }}"
+        class="btn buy-btn"
+        >구매하기</a
+      >
+      <a
+        href="{{ url_for('redirect_to_latest_review', product_name=product.name|urlencode) }}"
+        class="btn review-btn"
+        >리뷰 보러가기</a
+      >
+      <i class="fa fa-heart" id="heart"></i>
     </div>
-
   </div>
 </div>
 
 {% endblock %}
+
+<script>
+  function showHeart() {
+    $.ajax({
+      type: 'GET',
+      url: '/show_heart/{{product.name}}/',
+      data: {},
+      success: function (response) {
+        let my_heart = response['my_heart'];
+        if (my_heart['interested'] == 'Y') {
+          $('#heart').css('color', 'red');
+          $('#heart').attr('onclick', 'unlike()');
+        } else {
+          $('#heart').css('color', 'grey');
+          $('#heart').attr('onclick', 'like()');
+        }
+      },
+    });
+  }
+  function like() {
+    $.ajax({
+      type: 'POST',
+      url: '/like/{{product.name}}/',
+      data: {
+        interested: 'Y',
+      },
+      success: function (response) {
+        alert(response['msg']);
+        window.location.reload();
+      },
+    });
+  }
+
+  function unlike() {
+    $.ajax({
+      type: 'POST',
+      url: '/unlike/{{product.name}}/',
+      data: {
+        interested: 'N',
+      },
+      success: function (response) {
+        alert(response['msg']);
+        window.location.reload();
+      },
+    });
+  }
+  $(document).ready(function () {
+    showHeart();
+  });
+</script>
