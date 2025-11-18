@@ -231,20 +231,67 @@ class DBhandler:
             print(f"❌ 리뷰 ID 조회 실패: {e}")
             return None
 
-def get_heart_byname(self, uid, name):
-    hearts = self.db.child("heart").child(uid).get()
-    target_value=""
-    if hearts.val() == None:
+    def get_heart_byname(self, uid, name):
+        hearts = self.db.child("heart").child(uid).get()
+        target_value=""
+        if hearts.val() == None:
+            return target_value
+        for res in hearts.each():
+            key_value = res.key()
+            if key_value == name:
+                target_value=res.val()
         return target_value
-    for res in hearts.each():
-        key_value = res.key()
-        if key_value == name:
-            target_value=res.val()
-    return target_value
 
-def update_heart(self, user_id, isHeart, item):
-    heart_info ={
-        "interested": isHeart
-    }
-    self.db.child("heart").child(user_id).child(item).set(heart_info)
-    return True
+    def update_heart(self, user_id, isHeart, item):
+        heart_info ={
+            "interested": isHeart
+        }
+        self.db.child("heart").child(user_id).child(item).set(heart_info)
+        return True
+        
+    def get_review_by_name(self, product_name):
+
+        reviews_ref = self.db.child("review").get()
+
+        if not reviews_ref.val():
+            return None 
+
+        all_reviews = []
+        product_name_clean = product_name.strip() 
+        
+        try:
+            reviews_iterator = reviews_ref.each()
+            if reviews_iterator is None:
+                return None
+
+            for review in reviews_iterator:
+                review_data = review.val()
+                if not isinstance(review_data, dict):
+                    continue
+                
+                db_name = review_data.get('product_name')
+                
+                if db_name:
+                    r_name_clean = db_name.strip()
+                    
+                    # 상품명이 일치하는지 확인
+                    if r_name_clean == product_name_clean:
+                        # Pyrebase의 자동 생성 키(review ID)를 데이터에 포함
+                        review_data['review_id'] = review.key() 
+                        all_reviews.append(review_data)
+
+        except Exception as e:
+            print(f"❌ DB.get_review_by_name 에러 발생: {e}")
+            return None
+
+        if not all_reviews:
+            return None
+
+        # 가장 최근 리뷰 반환 (review_id 기준 내림차순 정렬)
+        latest_review = sorted(
+            all_reviews,
+            key=lambda r: r['review_id'],
+            reverse=True
+        )[0]
+        
+        return latest_review

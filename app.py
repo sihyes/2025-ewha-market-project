@@ -180,19 +180,37 @@ def product_register():
 
 @app.route("/review-list")
 def review_list():
-    # 리뷰 데이터 가져오기
-    reviews = DB.get_all_reviews()
-    
-    # 팝업을 위한 상품 이름 가져오기
+
+    page = request.args.get("page", 0, type=int) # 현재 페이지 (기본값 0)
+    per_page = 6      # 페이지당 리뷰 개수 (예: 6개)
+    per_row = 3       # 한 줄에 3개씩 (review.css에 맞춤)
+
+    all_reviews = DB.get_all_reviews() 
+
+    review_counts = len(all_reviews)
+
+    start_idx = page * per_page
+    end_idx = start_idx + per_page
+    reviews_on_page = all_reviews[start_idx:end_idx] # 현재 페이지에 보여줄 리뷰
+
+    for r in reviews_on_page:
+        image = r.get("image", "")
+        if image.startswith("/static/"):
+            r["image"] = image.replace("/static/", "")
+
     product_name_no_review = request.args.get("no_review_for")
-    
-    # 모든 데이터를 템플릿으로 전달합니다.
+
+    page_count = (review_counts + per_page - 1) // per_page
+
     return render_template("review-list.html", 
-                           reviews=reviews,
-                           product_name_no_review=product_name_no_review)
+                            reviews=reviews_on_page, # 현재 페이지 리뷰만 전달
+                            product_name_no_review=product_name_no_review,
+                            page=page,             # 현재 페이지 번호
+                            page_count=page_count, # 총 페이지 수
+                            total=review_counts)     # 총 리뷰 개수
 
 @app.route('/review/<title>')
-def review_detail_by_title(title): # 💡 함수명 변경: 라우트 이름과 충돌 방지
+def review_detail_by_title(title): 
     review = DB.get_review_by_title(title)
     if review:
         return render_template('detailed-review.html', review=review) 
@@ -206,7 +224,6 @@ def review_register():
         if 'photo' in request.files:
             file = request.files['photo']
             if file and file.filename:
-                # 💡 UPLOAD_FOLDER가 이제 정확히 정의되었으므로 작동합니다.
                 filename = file.filename
                 file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
                 image_path = f'img/{filename}' 
@@ -226,119 +243,34 @@ def review_register():
         DB.add_review(review_data)
         return redirect(url_for('review_list'))
     
-    return render_template('review-register.html')
+    # GET 요청 시 수정 사항 : URL에서 'product_name'을 가져옴 
+    product_name_from_url = request.args.get('product_name', '')
+    product_name_decoded = unquote(product_name_from_url)
 
+    return render_template('review-register.html', product_name=product_name_decoded)
 
-def get_latest_review_by_product_name(product_name):
-    """
-    [디버깅 최종판] 
-    - 함수가 받은 상품명과 DB에 있는 상품명을 터미널에 모두 출력합니다.
-    """
-    
-    # 1. 함수가 상세 페이지에서 어떤 이름으로 호출되었는지 출력
-    print("\n" + "="*50)
-    print(f"[DEBUG] 1. 상세 페이지가 요청한 상품명: '[{product_name}]'")
-    print(f"[DEBUG]     (길이: {len(product_name)})")
+@app.route("/view_review_detail/<product_name>") 
+def view_review_detail(product_name):
+    product_name_decoded = unquote(product_name)
+    review_data = DB.get_review_by_name(product_name_decoded)
 
-    print("="*50)
-
-    reviews_ref = DB.db.child("review").get()
-
-    if not reviews_ref.val():
-        print("[DEBUG] 2. 'review' 노드를 찾을 수 없거나 비어있습니다. (DB 확인 필요)")
-        return None
-
-    all_reviews = []
-    
-    try:
-        reviews_iterator = reviews_ref.each()
-        if reviews_iterator is None:
-            print("[DEBUG] 2. reviews_iterator가 None입니다. (데이터가 없는 듯합니다)")
-            return None
-
-        print("[DEBUG] 2. DB의 'review' 노드에서 모든 상품명을 검색합니다...")
-        for review in reviews_iterator:
-            review_data = review.val()
-            if not isinstance(review_data, dict):
-                continue
-            
-            db_name = review_data.get('product_name')
-            review_data['review_id'] = review.key()
-            all_reviews.append(review_data)
-            
-            # 3. DB에 있는 모든 리뷰의 상품명을 터미널에 출력
-            if db_name:
-                print(f"[DEBUG]     -> DB에 저장된 이름: '[{db_name}]' (길이: {len(db_name)})")
-            else:
-                print(f"[DEBUG]     -> DB에 'product_name' 필드가 없는 리뷰 발견 (ID: {review.key()})")
-
-
-    except Exception as e:
-        print(f"[DEBUG] 2. 리뷰 처리 중 심각한 에러 발생: {e}")
-        return None
-
-    if not all_reviews:
-        print("[DEBUG] 3. all_reviews 리스트가 비었습니다. (리뷰가 0개)")
-
-        print("="*50 + "\n")
-        return None # 일치하는 리뷰가 없음
-
-    # 4. 일치하는 리뷰 필터링 (양쪽 다 공백 제거 후 비교)
-    print("[DEBUG] 3. 공백을 제거하고 이름 비교를 시작합니다...")
-    product_name_clean = product_name.strip() 
-
-    matching_reviews = []
-    for r in all_reviews:
-        r_name = r.get('product_name')
-        if r_name:
-            r_name_clean = r_name.strip()
-            
-            if r_name_clean == product_name_clean:
-                matching_reviews.append(r)
-                print(f"[DEBUG]     -> ⭐️ 일치! (ID: {r['review_id']})")
-            # else:
-            #     print(f"[DEBUG]     -> 불일치: '[{r_name_clean}]' != '[{product_name_clean}]'")
-
-
-
-    if not matching_reviews:
-        print("[DEBUG] 4. 최종 결과: 일치하는 리뷰를 찾지 못했습니다.")
-        print("="*50 + "\n")
-        return None # 일치하는 리뷰가 없음
-
-    # 5. 성공
-    latest_review = sorted(
-        matching_reviews,
-        key=lambda r: r['review_id'],
-        reverse=True
-    )[0]
-    
-    print(f"[DEBUG] 4. 최종 결과: ⭐️ 성공! 리뷰 ID [{latest_review['review_id']}]를 반환합니다.")
-    print("="*50 + "\n")
-    return latest_review['review_id']
-
-@app.route("/redirect-to-product-review/<product_name>")
-def redirect_to_latest_review(product_name):
-    product_name_decoded = unquote(product_name) 
-    
-    latest_review_id = get_latest_review_by_product_name(product_name_decoded)
-
-    if latest_review_id:
-
-        return redirect(url_for('review_detail', review_id=latest_review_id))
+    if review_data:
+        return render_template('detailed-review.html', review=review_data)
     else:
-        # 2. 리뷰 없음: 팝업을 띄우기 위해 파라미터를 review_list로 전달
+        # 리뷰가 없을 경우
         return redirect(url_for('review_list', no_review_for=product_name_decoded))
+
+
 
 @app.route("/review-detail")
 def review_detail(): # URL 파라미터로 review_id를 받는 상세 페이지
     review_id = request.args.get("review_id")
     if review_id:
-        # 🌟 수정한 부분: DBhandler를 사용하여 리뷰 상세 정보를 가져옵니다.
+        # 수정한 부분: DBhandler를 사용하여 리뷰 상세 정보를 가져옵니다.
         review_data = DB.get_review_by_id(review_id) 
         
         if review_data:
-            # 🌟 'review'라는 이름으로 템플릿에 전달
+            # 'review'라는 이름으로 템플릿에 전달
             return render_template("detailed-review.html", review=review_data) 
         else:
             flash(f"리뷰 ID {review_id}를 찾을 수 없습니다.")
@@ -377,7 +309,7 @@ def login():
         pw = request.form['pw']
         pw_hash = hashlib.sha256(pw.encode('utf-8')).hexdigest()
 
-        # 💡 충돌 해결: login 함수 내부의 중복된 user 조회 로직을 find_user로 통일
+        # 충돌 해결: login 함수 내부의 중복된 user 조회 로직을 find_user로 통일
         if DB.find_user(id_,pw_hash): 
             session['user'] = id_ # 로그인 성공하면 세션에 저장
             return redirect(url_for('index')) # 로그인 후 원래 화면으로
@@ -404,7 +336,7 @@ def wishlist():
             data = item.val()
             item_id = data.get("item_id")
 
-            # 🔍 product DB에서 해당 상품 정보 가져오기
+            # product DB에서 해당 상품 정보 가져오기
             product_ref = DB.db.child("products").order_by_child("item_id").equal_to(str(item_id)).get() 
             if product_ref.each(): 
                 product_info = product_ref.each()[0].val() 
@@ -498,7 +430,7 @@ if __name__ == '__main__':
     # 조건부 샘플 리뷰 데이터 추가
     initial_reviews = DB.get_all_reviews() 
 
-    # 💡 충돌 해결: C와 D 브랜치 모두 메인 실행 로직이 필요. 리뷰 샘플 추가는 D 브랜치 기능.
+    # 충돌 해결: C와 D 브랜치 모두 메인 실행 로직이 필요. 리뷰 샘플 추가는 D 브랜치 기능.
     if not initial_reviews: 
         sample_reviews = [
             {
