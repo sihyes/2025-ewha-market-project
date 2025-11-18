@@ -5,7 +5,11 @@
 <div class="product-detail">
     <div class="product-image">
 
-        <img src="{{ url_for('static', filename=product.image) }}" alt="{{ product.name }}">
+        {% if product.image.startswith('http://') or product.image.startswith('https://') %}
+            <img src="{{ product.image }}" alt="{{ product.name }}">
+        {% else %}
+            <img src="{{ url_for('static', filename=product.image) }}" alt="{{ product.name }}">
+        {% endif %}
 
     </div>
     <div class="product-info">
@@ -38,7 +42,7 @@
             <a href="{{ url_for('review_register', product_name=product.name|urlencode) }}"
                 class="btn register-review-btn">리뷰 등록하기</a>
 
-    </div>
+        </div>
 
     </div>
 </div>
