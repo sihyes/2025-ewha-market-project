@@ -162,6 +162,7 @@ class DBhandler:
                 "item_img": item_img,
                 "user_id_item_id": key_combo
             })
+
             return True
         
      # ---------------- 리뷰 ----------------
@@ -215,6 +216,7 @@ class DBhandler:
                     break
 
         return target_value
+
     def get_review_by_id(self, review_id):
         """특정 ID(키)의 리뷰 상세 정보를 가져오기"""
         try:

@@ -1,17 +1,22 @@
 from flask import Flask, render_template, request, flash, redirect, url_for, session, jsonify
 from database import DBhandler
 import hashlib
-import os # 파일 업로드를 위해 필요
-
 from urllib.parse import unquote
+import os
+from werkzeug.utils import secure_filename
+from datetime import datetime
 
 app = Flask(__name__)
-# 💡 충돌 해결: C와 D 브랜치 모두 설정이 동일하므로 하나의 코드로 통합
-app.config["SECRET_KEY"] = "helloosp" 
-app.config['UPLOAD_FOLDER'] = 'static/img' # 업로드 폴더 설정 통일
-# DB handler 한 번만 생성
-DB = DBhandler()
+app.config["SECRET_KEY"] = "helloosp"
+app.config['UPLOAD_FOLDER'] = 'static/img'
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size
 
+# 허용된 파일 확장자
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
+
+def allowed_file(filename):
+    """파일 확장자가 허용된 형식인지 확인"""
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 # 샘플 상품 목록 (위치 변경 없음)
 products = [
@@ -23,6 +28,8 @@ products = [
     {'item_id': 106, 'name': '자라 운동화(235)', 'price': 30000, 'image': 'img/shoes_zara.jpeg'},
     {'item_id': 107, 'name': '전공책(기본간호수기)', 'price': 5000, 'image': 'img/book.jpeg'},
 ]
+
+DB = DBhandler()
 
 
 def format_price(value):
@@ -38,6 +45,8 @@ def format_price(value):
 # Flask 앱에 필터 등록
 app.jinja_env.filters['format_price'] = format_price
 
+# [수정] 중복된 format_price 함수 및 필터 등록 제거
+
 @app.route('/')
 def index():
     return render_template('home.html')
@@ -45,9 +54,10 @@ def index():
 
 @app.route('/feature-list')
 def feature_list():
-     #1. 페이지네이션 파라미터
+    #1. 페이지네이션 파라미터
     page = request.args.get("page", 0, type=int)
-    per_page = 10   # 페이지당 상품 10개
+    per_page = 10  # 한 페이지당 상품 10개
+
     per_row = 5
 
     # 2. DB에서 상품 가져오기
@@ -63,7 +73,8 @@ def feature_list():
                 "region": data.get("region"),
                 "condition": data.get("condition"),
                 "description": data.get("description"),
-                "image": data.get("image"), # <- DB image 그대로 사용
+                "image": data.get("image"),  # <- DB image 그대로 사용
+
                 "seller_id": data.get("seller_id")
             })
 
@@ -115,15 +126,46 @@ def product_register():
         
         # 이미지 경로 처리
         image_path = ''
+        
+        # 1. 외부 URL이 제공된 경우
         if image_url:
-            # 외부 URL 사용
             image_path = image_url
+        # 2. 파일 업로드가 있는 경우
         elif 'image_file' in request.files:
             file = request.files['image_file']
-            if file and file.filename:
-                # 파일 업로드 처리 (현재는 URL만 지원, 파일은 추후 구현)
-                # 일단은 기본 이미지 사용
-                image_path = 'img/default.png'
+            if file and file.filename and allowed_file(file.filename):
+                try:
+                    # 안전한 파일명으로 변환
+                    filename = secure_filename(file.filename)
+                    # 고유한 파일명 생성 (타임스탬프 + 원본 파일명)
+                    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S_%f')
+                    file_ext = filename.rsplit('.', 1)[1].lower() if '.' in filename else 'jpg'
+                    unique_filename = f"{timestamp}_{filename}"
+                    
+                    # 업로드 폴더가 없으면 생성
+                    upload_folder = app.config['UPLOAD_FOLDER']
+                    if not os.path.exists(upload_folder):
+                        os.makedirs(upload_folder)
+                    
+                    # 파일 저장
+                    file_path = os.path.join(upload_folder, unique_filename)
+                    file.save(file_path)
+                    
+                    # 데이터베이스에 저장할 경로 형식: 'img/파일명'
+                    image_path = f'img/{unique_filename}'
+                    flash(f'이미지가 성공적으로 업로드되었습니다: {unique_filename}')
+                except Exception as e:
+                    flash(f'이미지 업로드 중 오류가 발생했습니다: {str(e)}')
+                    image_path = ''  # 업로드 실패 시 빈 문자열
+            elif file and file.filename and not allowed_file(file.filename):
+                flash('지원하지 않는 파일 형식입니다. (png, jpg, jpeg, gif, webp만 가능)')
+                return redirect(url_for('product_register'))
+        
+        # 이미지가 없으면 기본값 사용하지 않고 경고 (선택사항으로 변경 가능)
+        if not image_path:
+            flash('이미지를 업로드하거나 URL을 입력해주세요.')
+            return redirect(url_for('product_register'))
+
         
         # Firebase에 상품 저장
         if DB.insert_product(seller_id, name, price, region, condition, description, image_path):
@@ -135,7 +177,7 @@ def product_register():
     
     return render_template('product-register.html')
 
-# 충돌 해결: 리뷰 목록 라우트 통합 (리뷰 데이터 가져오기 + 팝업 파라미터 처리)
+
 @app.route("/review-list")
 def review_list():
 
@@ -348,7 +390,6 @@ def product_detail(product_id):
         if product_data is None:
             return "해당 상품을 찾을 수 없습니다.", 404
         
-        # 4. (선택적) 이미지 경로 보정
         image_path = product_data.get("image", "")
         if image_path.startswith("/static/"):
             product_data["image"] = image_path.replace("/static/", "")

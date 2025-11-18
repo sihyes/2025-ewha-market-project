@@ -38,11 +38,7 @@
             <a href="{{ url_for('review_register', product_name=product.name|urlencode) }}"
                 class="btn register-review-btn">리뷰 등록하기</a>
 
-            <button class="wishlist-btn wished" onclick="toggleWishlist('{{ product.item_id }}', this)">
-                <img src="{{ url_for('static', filename='img/heart-fill.svg') }}" alt="찜">
-
-            </button>
-        </div>
+    </div>
 
     </div>
 </div>
