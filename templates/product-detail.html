@@ -7,7 +7,12 @@
 
   <!-- 왼쪽: 상품 이미지 -->
   <div class="product-image">
+  {% if product.image.startswith('http://') or product.image.startswith('https://') %}
+    <img src="{{ product.image }}" alt="{{ product.name }}">
+  {% else %}
     <img src="{{ url_for('static', filename=product.image) }}" alt="{{ product.name }}">
+  {% endif %}
+
   </div>
 
   <!-- 오른쪽: 상품 정보 -->
@@ -19,7 +24,7 @@
       <a href="#" class="btn buy-btn">구매하기</a>
       <a href="{{ url_for('review_list') }}" class="btn review-btn">리뷰 보러가기</a>
       <button class="wishlist-btn wished"
-              onclick="toggleWishlist('{{ product.id }}', this)">
+              onclick="toggleWishlist('{{ product.item_id }}', this)">
         <img src="{{ url_for('static', filename='img/heart-fill.svg') }}" alt="찜">
       </button>
     </div>
