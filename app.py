@@ -463,3 +463,17 @@ if __name__ == '__main__':
             DB.add_review(r)
         
     app.run(debug=True)
+
+#----찜하기 교수님코드 11.18 추가-- week 
+@app.route('/show_heart/<name>/', methods=['GET'])
+def show_heart(name):
+    my_heart = DB.get_heart_byname(session['user'],name)
+    return jsonify({'my_heart': my_heart})
+@app.route('/like/<name>/', methods=['POST'])
+def like(name):
+    my_heart = DB.update_heart(session['user'],'Y',name)
+    return jsonify({'msg': '좋아요 완료!'})
+@app.route('/unlike/<name>/', methods=['POST'])
+def unlike(name):
+    my_heart = DB.update_heart(session['user'],'N',name)
+    return jsonify({'msg': '안좋아요 완료!'})

@@ -143,11 +143,20 @@
   cursor: pointer;
 }
 
+/*찜하기-교수님코드*/
+#heart {
+  color: grey;
+  font-size: 50px;
+}
+
+#heart.red {
+  color: red;
 .register-review-btn {
   background-color: #ffc107;
   color: #000;
 }
+}
 
-.register-review-btn:hover {
+.register-review-btn {
   background-color: #e0a800;
 }
