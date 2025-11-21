@@ -162,6 +162,41 @@ class DBhandler:
                 "item_img": item_img,
                 "user_id_item_id": key_combo
             })
+
+            return True
+        
+     # ---------------- 리뷰 ----------------
+    def add_review(self, review_data):
+        try:
+            self.db.child("review").push(review_data)
+            print("✅ 리뷰 저장 완료:", review_data)
+            return True
+        except Exception as e:
+            print(f"❌ 리뷰 저장 실패: {e}")
+            return False
+
+    def get_all_reviews(self):
+        """모든 리뷰 가져오기"""
+        try:
+            reviews = self.db.child("review").get().val()
+            if not reviews:
+                return []
+            return [r for r in reviews.values()]
+        except Exception as e:
+            print(f"❌ 리뷰 조회 실패: {e}")
+            return []
+
+    def get_review_by_title(self, title):
+        """특정 제목의 리뷰 가져오기 (상세 페이지용)"""
+        try:
+            all_reviews = self.get_all_reviews()
+            for r in all_reviews:
+                if r.get("title") == title:
+                    return r
+            return None
+        except Exception as e:
+            print(f"❌ 리뷰 상세 조회 실패: {e}")
+            return None
             return True    
         
    # ---------------- 상품 상세 조회 ----------------
@@ -182,3 +217,81 @@ class DBhandler:
 
         return target_value
 
+    def get_review_by_id(self, review_id):
+        """특정 ID(키)의 리뷰 상세 정보를 가져오기"""
+        try:
+            # review_id는 Firebase의 자동 생성된 key이므로 child(review_id)로 바로 접근
+            review_data = self.db.child("review").child(review_id).get().val()
+            if review_data:
+                # review_data 딕셔너리에 review_id도 포함하여 반환
+                review_data['review_id'] = review_id
+                return review_data
+            return None
+        except Exception as e:
+            print(f"❌ 리뷰 ID 조회 실패: {e}")
+            return None
+
+    def get_heart_byname(self, uid, name):
+        hearts = self.db.child("heart").child(uid).get()
+        target_value=""
+        if hearts.val() == None:
+            return target_value
+        for res in hearts.each():
+            key_value = res.key()
+            if key_value == name:
+                target_value=res.val()
+        return target_value
+
+    def update_heart(self, user_id, isHeart, item):
+        heart_info ={
+            "interested": isHeart
+        }
+        self.db.child("heart").child(user_id).child(item).set(heart_info)
+        return True
+        
+    def get_review_by_name(self, product_name):
+
+        reviews_ref = self.db.child("review").get()
+
+        if not reviews_ref.val():
+            return None 
+
+        all_reviews = []
+        product_name_clean = product_name.strip() 
+        
+        try:
+            reviews_iterator = reviews_ref.each()
+            if reviews_iterator is None:
+                return None
+
+            for review in reviews_iterator:
+                review_data = review.val()
+                if not isinstance(review_data, dict):
+                    continue
+                
+                db_name = review_data.get('product_name')
+                
+                if db_name:
+                    r_name_clean = db_name.strip()
+                    
+                    # 상품명이 일치하는지 확인
+                    if r_name_clean == product_name_clean:
+                        # Pyrebase의 자동 생성 키(review ID)를 데이터에 포함
+                        review_data['review_id'] = review.key() 
+                        all_reviews.append(review_data)
+
+        except Exception as e:
+            print(f"❌ DB.get_review_by_name 에러 발생: {e}")
+            return None
+
+        if not all_reviews:
+            return None
+
+        # 가장 최근 리뷰 반환 (review_id 기준 내림차순 정렬)
+        latest_review = sorted(
+            all_reviews,
+            key=lambda r: r['review_id'],
+            reverse=True
+        )[0]
+        
+        return latest_review
