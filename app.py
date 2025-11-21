@@ -4,6 +4,8 @@ import hashlib
 import os
 from werkzeug.utils import secure_filename
 from datetime import datetime
+from urllib.parse import unquote
+
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "helloosp"
@@ -29,6 +31,19 @@ products = [
 ]
 
 DB = DBhandler()
+
+def format_price(value):
+    """숫자를 받아 쉼표로 포맷팅합니다."""
+    # 숫자가 아닌 값이 들어왔을 경우를 대비해 처리 (예: 문자열 "10000"도 처리)
+    try:
+        value = int(value)
+    except (ValueError, TypeError):
+        return value # 포맷 불가 시 원본 값 반환
+
+    return "{:,}".format(value)
+
+# Flask 앱에 필터 등록
+app.jinja_env.filters['format_price'] = format_price
 
 @app.route('/')
 def index():
@@ -157,21 +172,125 @@ def product_register():
     
     return render_template('product-register.html')
 
-@app.route("/review-list")
-def review_list():
-    return render_template("review-list.html") 
-
 @app.route("/review-register")
 def review_register():
     return render_template('review-register.html')
 
+@app.route("/review-list")
+def review_list():
+    # 1. URL 쿼리 파라미터에서 팝업을 위한 상품 이름을 가져옵니다.
+    product_name_no_review = request.args.get("no_review_for")
+    
+    # 2. 이 변수를 템플릿으로 전달합니다.
+    return render_template("review-list.html", 
+                           product_name_no_review=product_name_no_review)
+
+def get_latest_review_by_product_name(product_name):
+    """
+    [디버깅 최종판] 
+    - 함수가 받은 상품명과 DB에 있는 상품명을 터미널에 모두 출력합니다.
+    """
+    
+    # 1. 함수가 상세 페이지에서 어떤 이름으로 호출되었는지 출력
+    print("\n" + "="*50)
+    print(f"[DEBUG] 1. 상세 페이지가 요청한 상품명: '[{product_name}]'")
+    print(f"[DEBUG]    (길이: {len(product_name)})")
+    print("="*50)
+
+    reviews_ref = DB.db.child("review").get()
+
+    if not reviews_ref.val():
+        print("[DEBUG] 2. 'review' 노드를 찾을 수 없거나 비어있습니다. (DB 확인 필요)")
+        return None
+
+    all_reviews = []
+    
+    try:
+        reviews_iterator = reviews_ref.each()
+        if reviews_iterator is None:
+            print("[DEBUG] 2. reviews_iterator가 None입니다. (데이터가 없는 듯합니다)")
+            return None
+
+        print("[DEBUG] 2. DB의 'review' 노드에서 모든 상품명을 검색합니다...")
+        for review in reviews_iterator:
+            review_data = review.val()
+            if not isinstance(review_data, dict):
+                continue
+            
+            db_name = review_data.get('product_name')
+            review_data['review_id'] = review.key()
+            all_reviews.append(review_data)
+            
+            # 3. DB에 있는 모든 리뷰의 상품명을 터미널에 출력
+            if db_name:
+                print(f"[DEBUG]    -> DB에 저장된 이름: '[{db_name}]' (길이: {len(db_name)})")
+            else:
+                print(f"[DEBUG]    -> DB에 'product_name' 필드가 없는 리뷰 발견 (ID: {review.key()})")
+
+    except Exception as e:
+        print(f"[DEBUG] 2. 리뷰 처리 중 심각한 에러 발생: {e}")
+        return None
+
+    if not all_reviews:
+        print("[DEBUG] 3. all_reviews 리스트가 비었습니다. (리뷰가 0개)")
+        return None
+
+    # 4. 일치하는 리뷰 필터링 (양쪽 다 공백 제거 후 비교)
+    print("[DEBUG] 3. 공백을 제거하고 이름 비교를 시작합니다...")
+    product_name_clean = product_name.strip() 
+
+    matching_reviews = []
+    for r in all_reviews:
+        r_name = r.get('product_name')
+        if r_name:
+            r_name_clean = r_name.strip()
+            
+            if r_name_clean == product_name_clean:
+                matching_reviews.append(r)
+                print(f"[DEBUG]    -> ⭐️ 일치! (ID: {r['review_id']})")
+            # else:
+            #    print(f"[DEBUG]    -> 불일치: '[{r_name_clean}]' != '[{product_name_clean}]'")
+
+
+    if not matching_reviews:
+        print("[DEBUG] 4. 최종 결과: 일치하는 리뷰를 찾지 못했습니다.")
+        print("="*50 + "\n")
+        return None # 일치하는 리뷰가 없음
+
+    # 5. 성공
+    latest_review = sorted(
+        matching_reviews,
+        key=lambda r: r['review_id'],
+        reverse=True
+    )[0]
+    
+    print(f"[DEBUG] 4. 최종 결과: ⭐️ 성공! 리뷰 ID [{latest_review['review_id']}]를 반환합니다.")
+    print("="*50 + "\n")
+    return latest_review['review_id']
+
+@app.route("/redirect-to-product-review/<product_name>")
+def redirect_to_latest_review(product_name):
+    product_name_decoded = unquote(product_name) 
+    
+    latest_review_id = get_latest_review_by_product_name(product_name_decoded)
+
+    if latest_review_id:
+        # 1. 리뷰 있음: detailed-review.html로 이동
+        #    (review_detail 함수가 'detailed-review.html'을 렌더링한다고 가정)
+        return redirect(url_for('review_detail', review_id=latest_review_id))
+    else:
+        # 2. 리뷰 없음: 팝업을 띄우기 위해 파라미터를 review_list로 전달
+        return redirect(url_for('review_list', no_review_for=product_name_decoded))
+
 @app.route("/review-detail")
-def simple_review_detail():
-    """
-    모든 리뷰 카드가 연결될 하드코딩된 상세 페이지 엔드포인트입니다.
-    ID를 받지 않고, 단순히 템플릿만 렌더링합니다.
-    """
-    return render_template("detailed-review.html")
+def review_detail(): # 함수 이름 변경 (기존 simple_review_detail에서 변경)
+    review_id = request.args.get("review_id")
+    if review_id:
+      
+        return render_template("detailed-review.html", review_id=review_id)
+    else:
+        # ID가 없으면 리뷰 목록으로 리디렉션하거나 에러 처리
+        return redirect(url_for('review_list'))
 
 #------회원가입
 @app.route("/signup")
@@ -270,11 +389,60 @@ def logout():
 
 @app.route('/product/<product_id>')
 def product_detail(product_id):
-    product = DB.get_item_byid(product_id)
-    if not product:
-        return "해당 상품을 찾을 수 없습니다.", 404
-    return render_template('product-detail.html', product=product)
+    try:
+        # 1. Firebase 'products' 노드에서 'item_id'가 product_id와 일치하는 것을 찾습니다.
+        #    (item_id가 DB에 문자열로 저장되었을 수 있으므로 str()로 비교)
+        product_ref = DB.db.child("products").order_by_child("item_id").equal_to(str(product_id)).get()
 
+        product_data = None
+        
+        # 2. .val()이 비어있지 않고, .each()로 실제 데이터가 있는지 확인
+        if product_ref.val(): 
+            for p in product_ref.each():
+                product_data = p.val()
+                # item_id는 고유하므로 첫 번째 아이템만 가져오고 중단
+                break 
+
+        # 3. product_data가 None이면 (즉, 상품을 못 찾았으면) 404 에러
+        if product_data is None:
+            return "해당 상품을 찾을 수 없습니다.", 404
+        
+        # 4. (선택적) 이미지 경로 보정 (feature_list에 있던 로직)
+        image_path = product_data.get("image", "")
+        if image_path.startswith("/static/"):
+            product_data["image"] = image_path.replace("/static/", "")
+
+        # 5. 템플릿으로 product_data (딕셔너리)를 전달합니다.
+        return render_template('product-detail.html', product=product_data)
+
+    except Exception as e:
+        # Firebase 연결 오류 등 예외 처리
+        print(f"상품 상세 정보 로드 중 에러: {e}")
+        return f"상품 정보를 불러오는 중 오류가 발생했습니다: {e}", 500
+
+@app.route('/purchase/<int:product_id>')
+def purchase(product_id):
+
+    products_ref = DB.db.child("products").get()
+    products = [p.val() for p in products_ref.each()] if products_ref.each() else []
+    
+    # item_id 비교하여 해당 상품 찾기
+    product = next((p for p in products if str(p['item_id']) == str(product_id)), None)
+    
+    if not product:
+        return "구매할 상품을 찾을 수 없습니다.", 404
+    
+    # image 경로 조정 
+    if product.get("image", "").startswith("/static/"):
+        product["image"] = product["image"].replace("/static/", "")
+    
+    try:
+        product['price'] = int(product['price'])
+    except ValueError:
+        product['price'] = 0
+
+    # 이제 product 변수가 정의되었으므로 템플릿에 전달할 수 있습니다.
+    return render_template('purchase.html', product=product)
 
 if __name__ == '__main__':
     app.run(debug=True)

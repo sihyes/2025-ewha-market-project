@@ -1,0 +1,82 @@
+{% extends "index.html" %}
+{% block title %}상품 구매 페이지{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/purchase.css') }}">
+
+<div class="purchase-container">
+    <h2 class="purchase-title">상품 구매</h2>
+
+    <div class="product-info-summary">
+        <p class="product-name">구매 상품: <strong>{{ product.name }}</strong></p>
+        
+        <p class="product-price" data-base-price="{{ product.price | int }}">
+                        단가: ₩<span id="base-price-display">{{ product.price | format_price }}</span>
+        </p>
+    </div>
+
+    <hr>
+
+    <div class="quantity-control">
+        <label for="quantity">구매 수량:</label>
+        <div class="control-group">
+            <button class="quantity-btn minus-btn" onclick="updateQuantity(-1)">-</button>
+            <input type="number" id="quantity" value="1" min="1" readonly>
+            <button class="quantity-btn plus-btn" onclick="updateQuantity(1)">+</button>
+        </div>
+    </div>
+
+    <div class="total-amount">
+        <p>총 결제 금액:</p>
+        <p class="amount-value">₩<span id="total-amount-display">{{ product.price | format_price }}</span></p>
+    </div>
+
+        <button class="btn confirm-btn" onclick="confirmPurchase()">구매 확정</button>
+
+</div>
+
+<script>
+    // app.py의 라우트에서 'product.price'가 이미 int로 변환되어 넘어온다고 가정
+    const basePrice = parseFloat(document.querySelector('.product-price').dataset.basePrice);
+    const quantityInput = document.getElementById('quantity');
+    const totalAmountDisplay = document.getElementById('total-amount-display');
+
+    // 숫자에 쉼표 포맷을 적용하는 함수 (JavaScript용)
+    function formatNumber(num) {
+        return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    }
+
+    // 수량 변경 및 총 금액 업데이트
+    function updateQuantity(change) {
+        let currentQty = parseInt(quantityInput.value);
+        let newQty = currentQty + change;
+
+        if (newQty < 1) {
+            newQty = 1; // 최소 수량 1
+        }
+
+        quantityInput.value = newQty;
+        updateTotalAmount(newQty);
+    }
+
+    // 총 금액 계산 및 표시 업데이트
+    function updateTotalAmount(qty) {
+        const total = basePrice * qty;
+        totalAmountDisplay.textContent = formatNumber(total);
+    }
+
+    // 🚨 최종 확정 버튼 로직 (모달 없이 바로 실행)
+    function confirmPurchase() {
+        const product_name = document.querySelector('.product-name strong').textContent;
+        const currentQty = parseInt(quantityInput.value);
+        const currentTotal = basePrice * currentQty;
+
+        alert(`🎉 구매가 확정되었습니다!\n상품: ${product_name}\n수량: ${currentQty}개\n총 금액: ₩${formatNumber(currentTotal)}`); 
+        
+        // 여기에 구매 완료 후 이동할 페이지 리다이렉션 로직을 추가할 수 있습니다.
+        // 예: window.location.href = '/feature-list'; 
+    }
+    
+    // 🚨 모달 관련 JavaScript 함수 및 window.onclick 이벤트 핸들러 모두 삭제됨
+</script>
+{% endblock %}
