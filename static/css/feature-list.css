@@ -73,33 +73,35 @@ h4 {
 }
 
 /* 페이지네이션 스타일 */
-.page-wrap {
-  text-align: center;
-  margin-top: 0px;
+.pagination {
+    text-align: center;
+    margin-top: 40px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
 }
-.page-nation ul {
-  display: inline-block;
-  list-style: none;
-  padding: 0;
+
+.page-link,
+.page-current {
+    display: block;
+    padding: 8px 15px;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    text-decoration: none;
+    color: #0b593f;
+    font-weight: 600;
+    transition: background-color 0.2s, color 0.2s;
 }
-.page-nation li {
-  display: inline-block;
-  margin: 0 5px;
+
+.page-link:hover {
+    background-color: #f0f0f0;
 }
-.page-nation a {
-  text-decoration: none;
-  padding: 8px 14px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  color: #333;
-  background-color: #fafafa;
-}
-.page-nation a.active {
-  background-color: #333;
-  color: white;
-  font-weight: bold;
-  border-color:#333
-}
-.page-nation a:hover {
-  background-color: #e0e0e0;
+
+.page-current {
+    background-color: #0b593f;
+    color: white;
+    border-color: #0b593f;
+    cursor: default;
 }
