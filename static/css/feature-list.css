@@ -1,5 +1,4 @@
 h4 {
-  margin:20px 0 10px 30px;
   font-weight: 600;
 }
 
@@ -8,19 +7,20 @@ h4 {
 }
 
 /* 상품 카드들을 감싸는 영역 */
-.product-grid {
-  width: 100%;                
+.product-grid {                
   text-align: center;         
-  padding: 20px 30px;
+  padding: 30px;
   box-sizing: border-box;
   font-size:0;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); 
+  gap: 20px; 
+  justify-items: center; 
 }
 
 /* 각 상품 카드 */
-.product-card {
-  display: inline-block;       
-  width: 220px;                 
-  margin: 15px;                
+.product-card {      
+  width: 220px;                             
   background-color: #fff;
   border: 1px solid #ddd;
   padding: 12px;
@@ -108,15 +108,12 @@ h4 {
 
 /* 상품 상태 필터 박스 전체 스타일 (h4와 통일) */
 .filter-box {
-  margin: 20px 0 10px 30px;  
   font-weight: 600;          
   font-size: 16px;
 }
 
 /* select 박스 스타일 */
 .filter-box select {
-  margin-left: 8px;
-  padding: 6px 10px;
   border: 1px solid #ccc;
   border-radius: 6px;
   font-size: 14px;
@@ -128,4 +125,11 @@ h4 {
 .filter-box select:hover {
   border-color: #999;
   background-color: #f7f7f7;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;    /* 중앙 정렬 */
+    padding: 0 20px;   /* 양옆 여백 */
+    box-sizing: border-box;
 }

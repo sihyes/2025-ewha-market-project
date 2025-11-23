@@ -59,9 +59,9 @@ def feature_list():
     condition = request.args.get("condition", "all")
     #1. 페이지네이션 파라미터
     page = request.args.get("page", 0, type=int)
-    per_page = 10  # 한 페이지당 상품 10개
-
-    per_row = 5
+    per_row = 4
+    rows_per_page=2
+    per_page=per_row*rows_per_page
 
     # 2. DB에서 상품 가져오기
     products_ref = DB.db.child("products").get()
