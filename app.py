@@ -5,6 +5,8 @@ from urllib.parse import unquote
 import os
 from werkzeug.utils import secure_filename
 from datetime import datetime
+from urllib.parse import unquote
+
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "helloosp"
@@ -54,11 +56,12 @@ def index():
 
 @app.route('/feature-list')
 def feature_list():
+    condition = request.args.get("condition", "all")
     #1. 페이지네이션 파라미터
     page = request.args.get("page", 0, type=int)
-    per_page = 10  # 한 페이지당 상품 10개
-
-    per_row = 5
+    per_row = 4
+    rows_per_page=2
+    per_page=per_row*rows_per_page
 
     # 2. DB에서 상품 가져오기
     products_ref = DB.db.child("products").get()
@@ -66,6 +69,8 @@ def feature_list():
     if products_ref.each():
         for p in products_ref.each():
             data = p.val()
+            if condition != "all" and data.get("condition") != condition:
+                continue
             products.append({
                 "item_id": data.get("item_id"),
                 "name": data.get("name"),
@@ -79,6 +84,8 @@ def feature_list():
             })
 
     item_counts = len(products)
+
+    products.sort(key=lambda x: x["name"].lower())
 
     # 3. 페이지별로 나누기 
     start_idx = page * per_page
@@ -110,7 +117,8 @@ def feature_list():
                            wished_item_ids=wished_item_ids,
                            page=page,
                            page_count=page_count,
-                           total=item_counts)
+                           total=item_counts,
+                           condition=condition)
 
 @app.route('/product-register', methods=['GET', 'POST'])
 def product_register():

@@ -3,11 +3,27 @@
 {% block title %}상품 전체 조회{% endblock %}
 
 {% block content %}
+<div class="container">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/feature-list.css') }}">
 
   <h4 id="totalCount">
     전체 상품 조회 결과: <span class="count-number">{{ total }}</span>개
   </h4>
+
+  <!--condition 필터 UI 추가 -->
+<div class="filter-box">
+    <label for="condition">상품 상태:</label>
+    <select id="condition" onchange="location=this.value">
+        <option value="{{ url_for('feature_list', page=0, condition='all') }}"
+            {% if condition == 'all' %}selected{% endif %}>전체</option>
+
+        <option value="{{ url_for('feature_list', page=0, condition='new') }}"
+            {% if condition == 'new' %}selected{% endif %}>새상품</option>
+
+        <option value="{{ url_for('feature_list', page=0, condition='used') }}"
+            {% if condition == 'used' %}selected{% endif %}>중고</option>
+    </select>
+</div>
 
   <div class="product-grid" id="productContainer">
     {% for p in products %}
@@ -26,21 +42,28 @@
       </div>
     {% endfor %}
   </div>
-
-<div class="page-wrap">
-  <div class="page-nation">
-    <ul>
-      {% for i in range(page_count) %}
-        <li>
-          <a href="{{ url_for('feature_list', page=i) }}"
-             class="{% if i == page %}active{% endif %}">
-             {{ i + 1 }}
-          </a>
-        </li>
-      {% endfor %}
-    </ul>
   </div>
-</div>
+
+  <div class="pagination">
+
+    {% if page > 0 %}
+        <a href="{{ url_for('feature_list', page=page-1, condition=condition) }}" class="page-link">≪ 이전</a>
+    {% endif %}
+
+    {% for p in range(page_count) %}
+        {% if p == page %}
+            <span class="page-current">{{ p + 1 }}</span>
+        {% else %}
+            <a href="{{ url_for('feature_list', page=p, condition=condition) }}" class="page-link">{{ p + 1 }}</a>
+        {% endif %}
+    {% endfor %}
+
+    {% if page < page_count - 1 %}
+        <a href="{{ url_for('feature_list', page=page+1, condition=condition) }}" class="page-link">다음 ≫</a>
+    {% endif %}
+
+  </div>
+
 
   <script>
   const wishedItems = JSON.parse('{{ wished_item_ids | tojson | safe }}');
@@ -50,5 +73,6 @@
 
 
   <script src="{{ url_for('static', filename='js/feature-list.js') }}"></script>
+</div>
 
 {% endblock %}
