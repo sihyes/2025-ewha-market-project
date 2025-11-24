@@ -20,7 +20,6 @@
         <h2>{{ product.name }}</h2>
 
         <div class="product-description-area">
-            
             <div class="product-meta">
                 <p><strong>상태:</strong>
                     {% if product.condition == 'new' %}
@@ -44,14 +43,14 @@
         
         <div class="product-buttons">
             <a href="javascript:void(0)" 
-               onclick="checkLogin('{{ url_for('purchase', product_id=product.item_id) }}')" 
+               onclick="goToPurchase()" 
                class="btn buy-btn">구매하기</a>
             
             <a href="{{ url_for('view_review_detail', product_name=product.name|urlencode) }}" 
                class="btn review-btn">리뷰 보러가기</a>
             
             <a href="javascript:void(0)" 
-               onclick="checkLogin('{{ url_for('review_register', product_name=product.name|urlencode) }}')"
+               onclick="goToReviewRegister()"
                class="btn register-review-btn">리뷰 등록하기</a>
             
             <i class="fa fa-heart" id="heart"></i>
@@ -61,24 +60,27 @@
 </div>
 
 <script>
-  /* [VS Code 빨간 줄 방지용 코드]
-     파이썬 변수를 따옴표("")로 감싸서 자바스크립트 문자열처럼 보이게 만듭니다.
-     실제 실행될 때는 Flask가 따옴표 안의 값을 채워줍니다.
+  /* [빨간 줄 해결 전략]
+     HTML 태그 안에 복잡한 파이썬 코드를 넣으면 따옴표가 꼬여서 에러가 납니다.
+     그래서 여기서 미리 변수(String)로 만들어 둡니다.
   */
   
-  // 로그인 여부 ("true" 또는 "false" 문자열이 됨)
+  // 1. 필요한 URL들을 미리 문자열 변수로 만듭니다. (VS Code는 이걸 단순 문자열로 봅니다)
   const isUserLoggedIn = "{{ 'true' if 'user' in session else 'false' }}";
-  
-  // 로그인 페이지 주소
   const loginUrl = "{{ url_for('login') }}";
   
-  // 상품 이름 (찜하기 기능에 사용)
+  // 구매하기 주소
+  const purchaseUrl = "{{ url_for('purchase', product_id=product.item_id) }}";
+  
+  // 리뷰 등록하기 주소
+  const reviewRegisterUrl = "{{ url_for('review_register', product_name=product.name|urlencode) }}";
+  
+  // 찜하기용 상품 이름
   const productName = "{{ product.name }}";
 
 
-  // [기능 1] 로그인 체크 및 이동 함수
+  // [핵심] 로그인 체크 함수
   function checkLogin(destUrl) {
-    // 문자열 "true"와 비교합니다.
     if (isUserLoggedIn === "true") {
       window.location.href = destUrl;
     } else {
@@ -87,11 +89,21 @@
     }
   }
 
-  // [기능 2] 찜 상태 확인 (페이지 로드 시)
+  // [버튼 연결 1] 구매하기 버튼이 누르면 이 함수가 실행됨
+  function goToPurchase() {
+    checkLogin(purchaseUrl);
+  }
+
+  // [버튼 연결 2] 리뷰 등록 버튼이 누르면 이 함수가 실행됨
+  function goToReviewRegister() {
+    checkLogin(reviewRegisterUrl);
+  }
+
+
+  // --- 찜하기 기능 (기존 유지) ---
   function showHeart() {
     $.ajax({
       type: 'GET',
-      // Flask 변수 대신 위에서 선언한 자바스크립트 변수(productName) 사용
       url: '/show_heart/' + productName + '/', 
       data: {},
       success: function (response) {
@@ -107,19 +119,15 @@
     });
   }
 
-  // [기능 3] 찜하기 누름
   function like() {
     $.ajax({
       type: 'POST',
       url: '/like/' + productName + '/',
-      data: {
-        interested: 'Y',
-      },
+      data: { interested: 'Y' },
       success: function (response) {
         alert(response['msg']);
         window.location.reload();
       },
-      // 로그인 세션이 끊겼거나 에러 발생 시 처리
       error: function() {
         alert("로그인이 필요합니다.");
         window.location.href = loginUrl;
@@ -127,14 +135,11 @@
     });
   }
 
-  // [기능 4] 찜하기 취소
   function unlike() {
     $.ajax({
       type: 'POST',
       url: '/unlike/' + productName + '/',
-      data: {
-        interested: 'N',
-      },
+      data: { interested: 'N' },
       success: function (response) {
         alert(response['msg']);
         window.location.reload();
@@ -142,7 +147,6 @@
     });
   }
 
-  // 문서 로딩 완료 후 실행
   $(document).ready(function () {
     showHeart();
   });
