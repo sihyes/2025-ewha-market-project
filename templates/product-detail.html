@@ -61,24 +61,38 @@
 </div>
 
 <script>
-  // [기능] 로그인 상태 체크 함수
-  function checkLogin(url) {
-    // Flask 세션 정보를 확인하여 분기 처리
-    {% if 'user' in session %}
-      // 로그인 상태: 해당 URL로 이동
-      window.location.href = url;
-    {% else %}
-      // 비로그인 상태: 알림창 -> 로그인 페이지 이동
+  /* [VS Code 빨간 줄 방지용 코드]
+     파이썬 변수를 따옴표("")로 감싸서 자바스크립트 문자열처럼 보이게 만듭니다.
+     실제 실행될 때는 Flask가 따옴표 안의 값을 채워줍니다.
+  */
+  
+  // 로그인 여부 ("true" 또는 "false" 문자열이 됨)
+  const isUserLoggedIn = "{{ 'true' if 'user' in session else 'false' }}";
+  
+  // 로그인 페이지 주소
+  const loginUrl = "{{ url_for('login') }}";
+  
+  // 상품 이름 (찜하기 기능에 사용)
+  const productName = "{{ product.name }}";
+
+
+  // [기능 1] 로그인 체크 및 이동 함수
+  function checkLogin(destUrl) {
+    // 문자열 "true"와 비교합니다.
+    if (isUserLoggedIn === "true") {
+      window.location.href = destUrl;
+    } else {
       alert("로그인이 필요합니다.");
-      window.location.href = "{{ url_for('login') }}";
-    {% endif %}
+      window.location.href = loginUrl;
+    }
   }
 
-  // [기능] 찜하기(하트) 상태 표시
+  // [기능 2] 찜 상태 확인 (페이지 로드 시)
   function showHeart() {
     $.ajax({
       type: 'GET',
-      url: '/show_heart/{{product.name}}/',
+      // Flask 변수 대신 위에서 선언한 자바스크립트 변수(productName) 사용
+      url: '/show_heart/' + productName + '/', 
       data: {},
       success: function (response) {
         let my_heart = response['my_heart'];
@@ -93,11 +107,11 @@
     });
   }
 
-  // [기능] 찜하기 누름 (로그인 체크 에러 처리 추가)
+  // [기능 3] 찜하기 누름
   function like() {
     $.ajax({
       type: 'POST',
-      url: '/like/{{product.name}}/',
+      url: '/like/' + productName + '/',
       data: {
         interested: 'Y',
       },
@@ -105,19 +119,19 @@
         alert(response['msg']);
         window.location.reload();
       },
+      // 로그인 세션이 끊겼거나 에러 발생 시 처리
       error: function() {
-        // 혹시 AJAX 통신 중 401/403 에러가 나거나 실패하면 로그인 안내
         alert("로그인이 필요합니다.");
-        window.location.href = "{{ url_for('login') }}";
+        window.location.href = loginUrl;
       }
     });
   }
 
-  // [기능] 찜하기 취소
+  // [기능 4] 찜하기 취소
   function unlike() {
     $.ajax({
       type: 'POST',
-      url: '/unlike/{{product.name}}/',
+      url: '/unlike/' + productName + '/',
       data: {
         interested: 'N',
       },
@@ -128,6 +142,7 @@
     });
   }
 
+  // 문서 로딩 완료 후 실행
   $(document).ready(function () {
     showHeart();
   });
