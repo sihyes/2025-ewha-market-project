@@ -1,24 +1,26 @@
-{% extends "index.html" %} {% block title %}상품 상세 페이지{% endblock %} {%
-block content %}
+{% extends "index.html" %} 
+{% block title %}상품 상세 페이지{% endblock %} 
+{% block content %}
+
 <link
   rel="stylesheet"
   href="{{ url_for('static', filename='css/product-detail.css') }}"
 />
+
 <div class="product-detail">
     <div class="product-image">
-
         {% if product.image.startswith('http://') or product.image.startswith('https://') %}
             <img src="{{ product.image }}" alt="{{ product.name }}">
         {% else %}
             <img src="{{ url_for('static', filename=product.image) }}" alt="{{ product.name }}">
         {% endif %}
-
     </div>
+
     <div class="product-info">
         <h2>{{ product.name }}</h2>
 
         <div class="product-description-area">
-
+            
             <div class="product-meta">
                 <p><strong>상태:</strong>
                     {% if product.condition == 'new' %}
@@ -26,7 +28,8 @@ block content %}
                     {% elif product.condition == 'used' %}
                     중고
                     {% else %}
-                    {{ product.condition }} {% endif %}
+                    {{ product.condition }} 
+                    {% endif %}
                 </p>
                 <p><strong>판매자 아이디:</strong> {{ product.seller_id }}</p>
                 <p><strong>주소:</strong> {{ product.region }}</p>
@@ -36,22 +39,42 @@ block content %}
                 {{ product.description }}
             </p>
         </div>
-        <p><strong>가격:</strong> ₩{{ "{:,}".format(product.price) }}</p>
-        <div class="product-buttons">
-            <a href="{{ url_for('purchase', product_id=product.item_id) }}" class="btn buy-btn">구매하기</a>
-            <a href="{{ url_for('view_review_detail', product_name=product.name|urlencode) }}" class="btn review-btn">리뷰
-                보러가기</a>
-            <a href="{{ url_for('review_register', product_name=product.name|urlencode) }}"
-                class="btn register-review-btn">리뷰 등록하기</a>
-            <i class="fa fa-heart" id="heart"></i>
 
+        <p><strong>가격:</strong> ₩{{ "{:,}".format(product.price) }}</p>
+        
+        <div class="product-buttons">
+            <a href="javascript:void(0)" 
+               onclick="checkLogin('{{ url_for('purchase', product_id=product.item_id) }}')" 
+               class="btn buy-btn">구매하기</a>
+            
+            <a href="{{ url_for('view_review_detail', product_name=product.name|urlencode) }}" 
+               class="btn review-btn">리뷰 보러가기</a>
+            
+            <a href="javascript:void(0)" 
+               onclick="checkLogin('{{ url_for('review_register', product_name=product.name|urlencode) }}')"
+               class="btn register-review-btn">리뷰 등록하기</a>
+            
+            <i class="fa fa-heart" id="heart"></i>
         </div>
 
     </div>
 </div>
 
-
 <script>
+  // [기능] 로그인 상태 체크 함수
+  function checkLogin(url) {
+    // Flask 세션 정보를 확인하여 분기 처리
+    {% if 'user' in session %}
+      // 로그인 상태: 해당 URL로 이동
+      window.location.href = url;
+    {% else %}
+      // 비로그인 상태: 알림창 -> 로그인 페이지 이동
+      alert("로그인이 필요합니다.");
+      window.location.href = "{{ url_for('login') }}";
+    {% endif %}
+  }
+
+  // [기능] 찜하기(하트) 상태 표시
   function showHeart() {
     $.ajax({
       type: 'GET',
@@ -69,6 +92,8 @@ block content %}
       },
     });
   }
+
+  // [기능] 찜하기 누름 (로그인 체크 에러 처리 추가)
   function like() {
     $.ajax({
       type: 'POST',
@@ -80,9 +105,15 @@ block content %}
         alert(response['msg']);
         window.location.reload();
       },
+      error: function() {
+        // 혹시 AJAX 통신 중 401/403 에러가 나거나 실패하면 로그인 안내
+        alert("로그인이 필요합니다.");
+        window.location.href = "{{ url_for('login') }}";
+      }
     });
   }
 
+  // [기능] 찜하기 취소
   function unlike() {
     $.ajax({
       type: 'POST',
@@ -96,6 +127,7 @@ block content %}
       },
     });
   }
+
   $(document).ready(function () {
     showHeart();
   });
