@@ -139,19 +139,20 @@ class DBhandler:
             for w in wishlist.each():
                 self.db.child("wishlist").child(w.key()).remove()
             return False
-        else:
-            # 상품 정보 확인 후 추가
-            product = self.db.child("products").order_by_child("item_id").equal_to(str(item_id)).get()
-            if product.val():
-                p=product.val()
-                item_name = p.get("name", "이름 없음")
-                item_price = p.get("price", 0)
-                item_img = p.get("image", "/static/img/default.png")
-            else:
-                # 혹시 product DB에 없을 경우 대비
-                item_name = "알 수 없는 상품"
-                item_price = 0
-                item_img = "/static/img/default.png"
+        product_snapshot = self.db.child("products").order_by_child("item_id").equal_to(str(item_id)).get()
+        item_name = "알 수 없는 상품"
+        item_price = 0
+        item_img = "/static/img/default.png"
+
+        # 상품 정보 확인 후 추가
+        if product_snapshot.each():
+            for p in product_snapshot.each():
+                data = p.val()
+                item_name = data.get("name", "이름 없음")
+                item_price = data.get("price", 0)
+                item_img = data.get("image", "/static/img/default.png")
+                break  # 첫 번째 매칭만 사용
+
 
             # 🔹 찜 정보 Firebase에 저장
             self.db.child("wishlist").push({
@@ -165,7 +166,7 @@ class DBhandler:
 
             return True
         
-     # ---------------- 리뷰 ----------------
+    # ---------------- 리뷰 ----------------
     def add_review(self, review_data):
         try:
             self.db.child("review").push(review_data)
