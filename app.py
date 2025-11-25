@@ -18,17 +18,6 @@ def allowed_file(filename):
     """파일 확장자가 허용된 형식인지 확인"""
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-# 샘플 상품 목록 (위치 변경 없음)
-products = [
-    {'item_id': 101, 'name': '롬앤 컬러 립글로스', 'price': 9900, 'image': 'img/romn_gloss.jpeg'},
-    {'item_id': 102, 'name': '맥 립스틱', 'price': 10000, 'image': 'img/lipstick.jpeg'},
-    {'item_id': 103, 'name': '맨유 유니폼(호날두)', 'price': 70000, 'image': 'img/uniform.jpeg'},
-    {'item_id': 104, 'name': '나이키 운동화(250)', 'price': 40000, 'image': 'img/shoes_nike.jpeg'},
-    {'item_id': 105, 'name': '탁상용 선풍기', 'price': 10000, 'image': 'img/fan.jpeg'},
-    {'item_id': 106, 'name': '자라 운동화(235)', 'price': 30000, 'image': 'img/shoes_zara.jpeg'},
-    {'item_id': 107, 'name': '전공책(기본간호수기)', 'price': 5000, 'image': 'img/book.jpeg'},
-]
-
 DB = DBhandler()
 
 
@@ -394,8 +383,22 @@ def product_detail(product_id):
         if image_path.startswith("/static/"):
             product_data["image"] = image_path.replace("/static/", "")
 
+        # 찜 상태 가져오기
+        if 'user' in session:
+            user_id = session['user']
+            heart = DB.db.child("wishlist").order_by_child("user_id").equal_to(user_id).get()
+            # 찜 여부 확인 (현재 상품 id)
+            wished = False
+            if heart.each():
+                for item in heart.each():
+                    if str(item.val().get("item_id")) == str(product_id):
+                        wished = True
+                        break
+        else:
+            wished = False
+
         # 5. 템플릿으로 product_data (딕셔너리)를 전달합니다.
-        return render_template('product-detail.html', product=product_data)
+        return render_template('product-detail.html', product=product_data, wished=wished)
 
     except Exception as e:
         # Firebase 연결 오류 등 예외 처리

@@ -44,7 +44,7 @@ block content %}
             <a href="{{ url_for('review_register', product_name=product.name|urlencode) }}"
                 class="btn register-review-btn">리뷰 등록하기</a>
             <i class="fa fa-heart" id="heart"></i>
-
+            <button class="like-btn" data-item-id="{{ product.item_id }}">찜하기</button>
         </div>
 
     </div>
@@ -99,6 +99,43 @@ block content %}
   $(document).ready(function () {
     showHeart();
   });
+window.onload = function() {
+    const likeBtn = document.querySelector(".like-btn");
+
+    // Jinja에서 전달된 변수 true/false를 JS boolean으로 변환
+    const isWished = {{ 'true' if wished else 'false' }};
+
+    // 페이지 로딩 시 찜 상태 반영
+    if (isWished) {
+        likeBtn.style.backgroundColor = "pink";
+        likeBtn.textContent = "찜";
+    } else {
+        likeBtn.style.backgroundColor = "#f5f9f8";
+        likeBtn.textContent = "찜하기";
+    }
+
+    likeBtn.onclick = function() {
+        const itemId = likeBtn.dataset.itemId;
+        fetch(`/toggle_wishlist/${itemId}`, { method: "POST" })
+          .then(res => res.json())
+          .then(data => {
+            if (data.success) {
+              if (data.wished) {
+                likeBtn.style.backgroundColor = "pink";
+                likeBtn.textContent = "찜";
+                alert("상품을 찜했습니다 💚");
+              } else {
+                likeBtn.style.backgroundColor = "#f5f9f8";
+                likeBtn.textContent = "찜하기";
+                alert("찜하기를 취소했습니다 💔");
+              }
+            } else {
+              alert(data.msg || "오류가 발생했습니다.");
+            }
+          })
+          .catch(() => alert("서버 요청 실패 😢"));
+    };
+};
 </script>
 
 {% endblock %}
