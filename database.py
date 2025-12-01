@@ -132,13 +132,13 @@ class DBhandler:
         return items
 
     def toggle_wishlist(self, user_id, item_id):
-        key_combo = f"{user_id}_{item_id}"
-        wishlist = self.db.child("wishlist").order_by_child("user_id_item_id").equal_to(key_combo).get()
+        wishlist = self.db.child("wishlist").order_by_child("user_id").equal_to(user_id).get()
 
-        if wishlist.val():
-            for w in wishlist.each():
+        for w in wishlist.each() or []:
+            if w.val().get("item_id") == item_id:
                 self.db.child("wishlist").child(w.key()).remove()
-            return False
+                return False  # 찜 취소
+            
         product_snapshot = self.db.child("products").order_by_child("item_id").equal_to(str(item_id)).get()
         item_name = "알 수 없는 상품"
         item_price = 0
@@ -160,8 +160,7 @@ class DBhandler:
                 "item_id": item_id,
                 "item_name": item_name,
                 "item_price": item_price,
-                "item_img": item_img,
-                "user_id_item_id": key_combo
+                "item_img": item_img
             })
 
             return True
