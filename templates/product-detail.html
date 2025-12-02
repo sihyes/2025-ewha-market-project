@@ -61,8 +61,12 @@
 </div>
 
 <script>
+  /* [빨간 줄 해결 전략]
+     HTML 태그 안에 복잡한 파이썬 코드를 넣으면 따옴표가 꼬여서 에러가 납니다.
+     그래서 여기서 미리 변수(String)로 만들어 둡니다.
+  */
   
-  // 1. 필요한 URL들을 미리 문자열 변수로 만듭니다. 
+  // 1. 필요한 URL들을 미리 문자열 변수로 만듭니다. (VS Code는 이걸 단순 문자열로 봅니다)
   const isUserLoggedIn = "{{ 'true' if 'user' in session else 'false' }}";
   const loginUrl = "{{ url_for('login') }}";
   
@@ -97,7 +101,7 @@
   }
 
 
-  // --- 찜하기 기능  ---
+  // --- 찜하기 기능 (기존 유지) ---
   function showHeart() {
     $.ajax({
       type: 'GET',
@@ -150,6 +154,7 @@
 window.onload = function() {
     const likeBtn = document.querySelector(".like-btn");
 
+    // Jinja에서 전달된 변수 true/false를 JS boolean으로 변환
     const isWished = {{ 'true' if wished else 'false' }};
 
     // 페이지 로딩 시 찜 상태 반영
